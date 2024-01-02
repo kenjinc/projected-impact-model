@@ -86,8 +86,9 @@ us_enrollment_data %>%
   filter(series=="sa_pop"|series=="sa_pop_f"|series=="sa_pop_m") %>%
   mutate(year=factor(year,levels=unique(year))) %>%
   ggplot(aes(year,value,color=series,group=series)) +
-    geom_line() + 
+  geom_line() + 
   geom_point(size=.5) +
-  scale_color_viridis_d()
+  scale_color_viridis_d() + 
+  ylim(0,24000000)
 ```
 
