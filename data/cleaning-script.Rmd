@@ -368,14 +368,132 @@ us_enrollment_data <- read.csv("/Users/kenjinchang/github/projected-impact-model
   mutate(yr2018_s_pop_f=yr2018_sa_pop_f*yr2018_enr_rat_f) %>%
   mutate(yr2018_s_pop_m=yr2018_sa_pop_m*yr2018_enr_rat_m) %>%
   select(country,yr2000_s_pop,yr2000_s_pop_f,yr2000_s_pop_m,yr2001_s_pop,yr2001_s_pop_f,yr2001_s_pop_m,yr2002_s_pop,yr2002_s_pop_f,yr2002_s_pop_m,yr2003_s_pop,yr2003_s_pop_f,yr2003_s_pop_m,yr2004_s_pop,yr2004_s_pop_f,yr2004_s_pop_m,yr2005_s_pop,yr2005_s_pop_f,yr2005_s_pop_m,yr2006_s_pop,yr2006_s_pop_f,yr2006_s_pop_m,yr2007_s_pop,yr2007_s_pop_f,yr2007_s_pop_m,yr2008_s_pop,yr2008_s_pop_f,yr2008_s_pop_m,yr2009_s_pop,yr2009_s_pop_f,yr2009_s_pop_m,yr2010_s_pop,yr2010_s_pop_f,yr2010_s_pop_m,yr2011_s_pop,yr2011_s_pop_f,yr2011_s_pop_m,yr2012_s_pop,yr2012_s_pop_f,yr2012_s_pop_m,yr2013_s_pop,yr2013_s_pop_f,yr2013_s_pop_m,yr2014_s_pop,yr2014_s_pop_f,yr2014_s_pop_m,yr2015_s_pop,yr2015_s_pop_f,yr2015_s_pop_m,yr2016_s_pop,yr2016_s_pop_f,yr2016_s_pop_m,yr2017_s_pop,yr2017_s_pop_f,yr2017_s_pop_m,yr2018_s_pop,yr2018_s_pop_f,yr2018_s_pop_m) %>%
-  pivot_longer(!country,names_to="indicator",values_to="value") 
+  pivot_longer(!country,names_to="indicator",values_to="value") %>%
+  mutate(year=case_when(indicator %in% c("yr2000_s_pop","yr2000_s_pop_f","yr2000_s_pop_m") ~ 2000,
+                        indicator %in% c("yr2001_s_pop","yr2001_s_pop_f","yr2001_s_pop_m") ~ 2001,
+                        indicator %in% c("yr2002_s_pop","yr2002_s_pop_f","yr2002_s_pop_m") ~ 2002,
+                        indicator %in% c("yr2003_s_pop","yr2003_s_pop_f","yr2003_s_pop_m") ~ 2003,
+                        indicator %in% c("yr2004_s_pop","yr2004_s_pop_f","yr2004_s_pop_m") ~ 2004,
+                        indicator %in% c("yr2005_s_pop","yr2005_s_pop_f","yr2005_s_pop_m") ~ 2005,
+                        indicator %in% c("yr2006_s_pop","yr2006_s_pop_f","yr2006_s_pop_m") ~ 2006,
+                        indicator %in% c("yr2007_s_pop","yr2007_s_pop_f","yr2007_s_pop_m") ~ 2007,
+                        indicator %in% c("yr2008_s_pop","yr2008_s_pop_f","yr2008_s_pop_m") ~ 2008,
+                        indicator %in% c("yr2009_s_pop","yr2009_s_pop_f","yr2009_s_pop_m") ~ 2009,
+                        indicator %in% c("yr2010_s_pop","yr2010_s_pop_f","yr2010_s_pop_m") ~ 2010,
+                        indicator %in% c("yr2011_s_pop","yr2011_s_pop_f","yr2011_s_pop_m") ~ 2011,
+                        indicator %in% c("yr2012_s_pop","yr2012_s_pop_f","yr2012_s_pop_m") ~ 2012,
+                        indicator %in% c("yr2013_s_pop","yr2013_s_pop_f","yr2013_s_pop_m") ~ 2013,
+                        indicator %in% c("yr2014_s_pop","yr2014_s_pop_f","yr2014_s_pop_m") ~ 2014,
+                        indicator %in% c("yr2015_s_pop","yr2015_s_pop_f","yr2015_s_pop_m") ~ 2015,
+                        indicator %in% c("yr2016_s_pop","yr2016_s_pop_f","yr2016_s_pop_m") ~ 2016,
+                        indicator %in% c("yr2017_s_pop","yr2017_s_pop_f","yr2017_s_pop_m") ~ 2017,
+                        indicator %in% c("yr2018_s_pop","yr2018_s_pop_f","yr2018_s_pop_m") ~ 2018))
 us_enrollment_data 
 ```
 
-%>%
-  mutate(year=if_else(str_detect(indicator)))
 
 ```{r}
+us_enrollment_data <- read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/us_enrollment_data.csv") %>%
+  select(-Country.Code,-Series.Code) %>%
+  as_tibble(us_enrollment_data) %>%
+  slice(1:(n()-5)) %>%
+  rename(country=Country.Name,series=Series,yr2000=YR2000,yr2001=YR2001,yr2002=YR2002,yr2003=YR2003,yr2004=YR2004,yr2005=YR2005,yr2006=YR2006,yr2007=YR2007,yr2008=YR2008,yr2009=YR2009,yr2010=YR2010,yr2011=YR2011,yr2012=YR2012,yr2013=YR2013,yr2014=YR2014,yr2015=YR2015,yr2016=YR2016,yr2017=YR2017,yr2018=YR2018) %>%
+  mutate_at(c("yr2000","yr2001","yr2002","yr2003","yr2004","yr2005","yr2006","yr2007","yr2008","yr2009","yr2010","yr2011","yr2012","yr2013","yr2014","yr2015","yr2016","yr2017","yr2018"),as.double) %>%
+  replace(is.na(.),0) %>%
+  distinct() %>%
+  mutate(across("series",str_replace, fixed("School age population, tertiary education, both sexes (number)"),"sa_pop")) %>%
+  mutate(across("series",str_replace, fixed("School age population, tertiary education, female (number)"),"sa_pop_f")) %>%
+  mutate(across("series",str_replace, fixed("School age population, tertiary education, male (number)"),"sa_pop_m")) %>%
+  mutate(across("series",str_replace, fixed("Gross enrolment ratio for tertiary education, both sexes (%)"),"enr_rat")) %>%
+  mutate(across("series",str_replace, fixed("Gross enrolment ratio for tertiary education, female (%)"),"enr_rat_f")) %>%
+  mutate(across("series",str_replace, fixed("Gross enrolment ratio for tertiary education, male (%)"),"enr_rat_m")) %>% pivot_wider(names_from=series,values_from=c(yr2000,yr2001,yr2002,yr2003,yr2004,yr2005,yr2006,yr2007,yr2008,yr2009,yr2010,yr2011,yr2012,yr2013,yr2014,yr2015,yr2016,yr2017,yr2018)) %>%
+  mutate(yr2000_s_pop=yr2000_sa_pop*yr2000_enr_rat) %>%
+  mutate(yr2000_s_pop_f=yr2000_sa_pop_f*yr2000_enr_rat_f) %>%
+  mutate(yr2000_s_pop_m=yr2000_sa_pop_m*yr2000_enr_rat_m) %>%
+  mutate(yr2001_s_pop=yr2001_sa_pop*yr2001_enr_rat) %>%
+  mutate(yr2001_s_pop_f=yr2001_sa_pop_f*yr2001_enr_rat_f) %>%
+  mutate(yr2001_s_pop_m=yr2001_sa_pop_m*yr2001_enr_rat_m) %>%
+  mutate(yr2002_s_pop=yr2002_sa_pop*yr2002_enr_rat) %>%
+  mutate(yr2002_s_pop_f=yr2002_sa_pop_f*yr2002_enr_rat_f) %>%
+  mutate(yr2002_s_pop_m=yr2002_sa_pop_m*yr2002_enr_rat_m) %>%
+  mutate(yr2003_s_pop=yr2003_sa_pop*yr2003_enr_rat) %>%
+  mutate(yr2003_s_pop_f=yr2003_sa_pop_f*yr2003_enr_rat_f) %>%
+  mutate(yr2003_s_pop_m=yr2003_sa_pop_m*yr2003_enr_rat_m) %>%
+  mutate(yr2004_s_pop=yr2004_sa_pop*yr2004_enr_rat) %>%
+  mutate(yr2004_s_pop_f=yr2004_sa_pop_f*yr2004_enr_rat_f) %>%
+  mutate(yr2004_s_pop_m=yr2004_sa_pop_m*yr2004_enr_rat_m) %>%
+  mutate(yr2005_s_pop=yr2005_sa_pop*yr2005_enr_rat) %>%
+  mutate(yr2005_s_pop_f=yr2005_sa_pop_f*yr2005_enr_rat_f) %>%
+  mutate(yr2005_s_pop_m=yr2005_sa_pop_m*yr2005_enr_rat_m) %>%
+  mutate(yr2006_s_pop=yr2006_sa_pop*yr2006_enr_rat) %>%
+  mutate(yr2006_s_pop_f=yr2006_sa_pop_f*yr2006_enr_rat_f) %>%
+  mutate(yr2006_s_pop_m=yr2006_sa_pop_m*yr2006_enr_rat_m) %>%
+  mutate(yr2007_s_pop=yr2007_sa_pop*yr2007_enr_rat) %>%
+  mutate(yr2007_s_pop_f=yr2007_sa_pop_f*yr2007_enr_rat_f) %>%
+  mutate(yr2007_s_pop_m=yr2007_sa_pop_m*yr2007_enr_rat_m) %>%
+  mutate(yr2008_s_pop=yr2008_sa_pop*yr2008_enr_rat) %>%
+  mutate(yr2008_s_pop_f=yr2008_sa_pop_f*yr2008_enr_rat_f) %>%
+  mutate(yr2008_s_pop_m=yr2008_sa_pop_m*yr2008_enr_rat_m) %>%
+  mutate(yr2009_s_pop=yr2009_sa_pop*yr2009_enr_rat) %>%
+  mutate(yr2009_s_pop_f=yr2009_sa_pop_f*yr2009_enr_rat_f) %>%
+  mutate(yr2009_s_pop_m=yr2009_sa_pop_m*yr2009_enr_rat_m) %>%
+  mutate(yr2010_s_pop=yr2010_sa_pop*yr2010_enr_rat) %>%
+  mutate(yr2010_s_pop_f=yr2010_sa_pop_f*yr2010_enr_rat_f) %>%
+  mutate(yr2010_s_pop_m=yr2010_sa_pop_m*yr2010_enr_rat_m) %>%
+  mutate(yr2011_s_pop=yr2011_sa_pop*yr2011_enr_rat) %>%
+  mutate(yr2011_s_pop_f=yr2011_sa_pop_f*yr2011_enr_rat_f) %>%
+  mutate(yr2011_s_pop_m=yr2011_sa_pop_m*yr2011_enr_rat_m) %>%
+  mutate(yr2012_s_pop=yr2012_sa_pop*yr2012_enr_rat) %>%
+  mutate(yr2012_s_pop_f=yr2012_sa_pop_f*yr2012_enr_rat_f) %>%
+  mutate(yr2012_s_pop_m=yr2012_sa_pop_m*yr2012_enr_rat_m) %>%
+  mutate(yr2013_s_pop=yr2013_sa_pop*yr2013_enr_rat) %>%
+  mutate(yr2013_s_pop_f=yr2013_sa_pop_f*yr2013_enr_rat_f) %>%
+  mutate(yr2013_s_pop_m=yr2013_sa_pop_m*yr2013_enr_rat_m) %>%
+  mutate(yr2014_s_pop=yr2014_sa_pop*yr2014_enr_rat) %>%
+  mutate(yr2014_s_pop_f=yr2014_sa_pop_f*yr2014_enr_rat_f) %>%
+  mutate(yr2014_s_pop_m=yr2014_sa_pop_m*yr2014_enr_rat_m) %>%
+  mutate(yr2015_s_pop=yr2015_sa_pop*yr2015_enr_rat) %>%
+  mutate(yr2015_s_pop_f=yr2015_sa_pop_f*yr2015_enr_rat_f) %>%
+  mutate(yr2015_s_pop_m=yr2015_sa_pop_m*yr2015_enr_rat_m) %>%
+  mutate(yr2016_s_pop=yr2016_sa_pop*yr2016_enr_rat) %>%
+  mutate(yr2016_s_pop_f=yr2016_sa_pop_f*yr2016_enr_rat_f) %>%
+  mutate(yr2016_s_pop_m=yr2016_sa_pop_m*yr2016_enr_rat_m) %>%
+  mutate(yr2017_s_pop=yr2017_sa_pop*yr2017_enr_rat) %>%
+  mutate(yr2017_s_pop_f=yr2017_sa_pop_f*yr2017_enr_rat_f) %>%
+  mutate(yr2017_s_pop_m=yr2017_sa_pop_m*yr2017_enr_rat_m) %>%
+  mutate(yr2018_s_pop=yr2018_sa_pop*yr2018_enr_rat) %>%
+  mutate(yr2018_s_pop_f=yr2018_sa_pop_f*yr2018_enr_rat_f) %>%
+  mutate(yr2018_s_pop_m=yr2018_sa_pop_m*yr2018_enr_rat_m) %>%
+  select(country,yr2000_s_pop,yr2000_s_pop_f,yr2000_s_pop_m,yr2001_s_pop,yr2001_s_pop_f,yr2001_s_pop_m,yr2002_s_pop,yr2002_s_pop_f,yr2002_s_pop_m,yr2003_s_pop,yr2003_s_pop_f,yr2003_s_pop_m,yr2004_s_pop,yr2004_s_pop_f,yr2004_s_pop_m,yr2005_s_pop,yr2005_s_pop_f,yr2005_s_pop_m,yr2006_s_pop,yr2006_s_pop_f,yr2006_s_pop_m,yr2007_s_pop,yr2007_s_pop_f,yr2007_s_pop_m,yr2008_s_pop,yr2008_s_pop_f,yr2008_s_pop_m,yr2009_s_pop,yr2009_s_pop_f,yr2009_s_pop_m,yr2010_s_pop,yr2010_s_pop_f,yr2010_s_pop_m,yr2011_s_pop,yr2011_s_pop_f,yr2011_s_pop_m,yr2012_s_pop,yr2012_s_pop_f,yr2012_s_pop_m,yr2013_s_pop,yr2013_s_pop_f,yr2013_s_pop_m,yr2014_s_pop,yr2014_s_pop_f,yr2014_s_pop_m,yr2015_s_pop,yr2015_s_pop_f,yr2015_s_pop_m,yr2016_s_pop,yr2016_s_pop_f,yr2016_s_pop_m,yr2017_s_pop,yr2017_s_pop_f,yr2017_s_pop_m,yr2018_s_pop,yr2018_s_pop_f,yr2018_s_pop_m) %>%
+  pivot_longer(!country,names_to="indicator",values_to="value") %>%
+  mutate(year=case_when(indicator %in% c("yr2000_s_pop","yr2000_s_pop_f","yr2000_s_pop_m") ~ 2000,
+                        indicator %in% c("yr2001_s_pop","yr2001_s_pop_f","yr2001_s_pop_m") ~ 2001,
+                        indicator %in% c("yr2002_s_pop","yr2002_s_pop_f","yr2002_s_pop_m") ~ 2002,
+                        indicator %in% c("yr2003_s_pop","yr2003_s_pop_f","yr2003_s_pop_m") ~ 2003,
+                        indicator %in% c("yr2004_s_pop","yr2004_s_pop_f","yr2004_s_pop_m") ~ 2004,
+                        indicator %in% c("yr2005_s_pop","yr2005_s_pop_f","yr2005_s_pop_m") ~ 2005,
+                        indicator %in% c("yr2006_s_pop","yr2006_s_pop_f","yr2006_s_pop_m") ~ 2006,
+                        indicator %in% c("yr2007_s_pop","yr2007_s_pop_f","yr2007_s_pop_m") ~ 2007,
+                        indicator %in% c("yr2008_s_pop","yr2008_s_pop_f","yr2008_s_pop_m") ~ 2008,
+                        indicator %in% c("yr2009_s_pop","yr2009_s_pop_f","yr2009_s_pop_m") ~ 2009,
+                        indicator %in% c("yr2010_s_pop","yr2010_s_pop_f","yr2010_s_pop_m") ~ 2010,
+                        indicator %in% c("yr2011_s_pop","yr2011_s_pop_f","yr2011_s_pop_m") ~ 2011,
+                        indicator %in% c("yr2012_s_pop","yr2012_s_pop_f","yr2012_s_pop_m") ~ 2012,
+                        indicator %in% c("yr2013_s_pop","yr2013_s_pop_f","yr2013_s_pop_m") ~ 2013,
+                        indicator %in% c("yr2014_s_pop","yr2014_s_pop_f","yr2014_s_pop_m") ~ 2014,
+                        indicator %in% c("yr2015_s_pop","yr2015_s_pop_f","yr2015_s_pop_m") ~ 2015,
+                        indicator %in% c("yr2016_s_pop","yr2016_s_pop_f","yr2016_s_pop_m") ~ 2016,
+                        indicator %in% c("yr2017_s_pop","yr2017_s_pop_f","yr2017_s_pop_m") ~ 2017,
+                        indicator %in% c("yr2018_s_pop","yr2018_s_pop_f","yr2018_s_pop_m") ~ 2018)) %>%
+  mutate(indicator=str_remove(indicator,"\\d+(_)")) %>%
+  mutate(indicator=str_remove(indicator,"yr"))
+us_enrollment_data 
+```
 
+```{r}
+ggplot(us_enrollment_data,aes(year,value,color=indicator,group=indicator)) + 
+  geom_line() +
+  geom_point(size=.5) +
+  scale_color_viridis_d() 
 ```
 
