@@ -76,7 +76,7 @@ in order, we:
     and `0` corresponding to enrollent totals that do not
 
 ``` r
-read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv",skip=1) %>%
+enrollment_data <- read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv",skip=1) %>%
   as_tibble() %>%
   filter(!row_number() %in% c(2)) %>%
   select(!c(Associate.s.degrees.3,Bachelor.s.degrees.6,Master.s.degrees.3,Doctor.s.degrees.1..3)) %>%
@@ -89,6 +89,7 @@ read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrol
   mutate(bach_deg_m_assoc=replace(bach_deg_m_assoc, bach_deg_m_assoc == "\\2\\","1")) %>%
   mutate(bach_deg_f_assoc=replace(bach_deg_f_assoc, bach_deg_f_assoc != "\\2\\","0")) %>%
   mutate(bach_deg_f_assoc=replace(bach_deg_f_assoc, bach_deg_f_assoc == "\\2\\","1")) 
+enrollment_data 
 ```
 
     ## # A tibble: 64 × 16
@@ -109,3 +110,5 @@ read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrol
     ## #   and abbreviated variable names ¹​assoc_deg_tot, ²​assoc_deg_m, ³​assoc_deg_f,
     ## #   ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, ⁶​bach_deg_m, ⁷​bach_deg_m_assoc,
     ## #   ⁸​bach_deg_f, ⁹​bach_deg_f_assoc
+
+%\>% as.numeric(gsub(“,”,““,enrollment_data\$bach_deg_tot))
