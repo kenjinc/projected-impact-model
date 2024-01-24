@@ -22,8 +22,7 @@ library(ggpubr)
 loading in the US enrollment data from the `parent-dataset` folder
 
 ```{r}
-read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv") %>%
-  as_tibble() 
+as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv"))
 ```
 
 performing the necessary cleaning procedures to make the parent dataset suitable for our analyses
@@ -42,17 +41,24 @@ in order, we:
 
 6. renamed the columns dichotomously indicating whether the corresponding bachelor-level enrollment value include degrees classified as master's or doctor's degree in later years
 
-7. changed column values within the the `bach_deg_tot_assoc`, `bach_deg_m_assoc`, and `bach_deg_f_assoc` from `\\2\\` to `1` and `0`, with `1` corresponding to enrollment totals that do incoude degrees classified as master's or doctor's degrees in later years and `0` corresponding to enrollent totals that do not
+7. changed column values within the the `bach_deg_tot_assoc`, `bach_deg_m_assoc`, and `bach_deg_f_assoc` from `\\2\\` to `1` and `0`, with `1` corresponding to enrollment totals that do incoude degrees classified as master's or doctor's degrees in later years and `0` corresponding to enrollment totals that do not
+
+8. changed columns from character strings to numeric strings 
+
+9. replaced `NA` values with `0` values
+
+10. generated new columns aggregating the number of degrees earned, both as a total and across sexes, between bachelor's, master's, and doctoral programs 
+
+11. generated new columns calculating the proportion of university degrees contributed by bachelor's, master's, and doctoral programs
 
 
 
 
 ```{r}
-enrollment_data <- read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv",skip=1) %>%
-  as_tibble() %>%
+enrollment_data <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv",skip=1)) %>%
   filter(!row_number() %in% c(2)) %>%
   select(!c(Associate.s.degrees.3,Bachelor.s.degrees.6,Master.s.degrees.3,Doctor.s.degrees.1..3)) %>%
-  rename(year=Year,assoc_deg_tot=Associate.s.degrees,assoc_deg_m=Associate.s.degrees.1,assoc_deg_f=Associate.s.degrees.2,bach_deg_tot=Bachelor.s.degrees,bach_deg_m=Bachelor.s.degrees.2,bach_deg_f=Bachelor.s.degrees.4,mast_deg_tot=Master.s.degrees,mast_deg_m=Master.s.degrees.1,mast_deg_f=Master.s.degrees.2,doct_deg_tot=Doctor.s.degrees.1.,doct_deg_m=Doctor.s.degrees.1..1,doct_deg_f=Doctor.s.degrees.1..2) %>%
+  rename(acad.year=Year,assoc_deg_tot=Associate.s.degrees,assoc_deg_m=Associate.s.degrees.1,assoc_deg_f=Associate.s.degrees.2,bach_deg_tot=Bachelor.s.degrees,bach_deg_m=Bachelor.s.degrees.2,bach_deg_f=Bachelor.s.degrees.4,mast_deg_tot=Master.s.degrees,mast_deg_m=Master.s.degrees.1,mast_deg_f=Master.s.degrees.2,doct_deg_tot=Doctor.s.degrees.1.,doct_deg_m=Doctor.s.degrees.1..1,doct_deg_f=Doctor.s.degrees.1..2) %>%
   filter(!row_number() %in% c(1,66,67,68,69,70,71)) %>%
   rename(bach_deg_tot_assoc=Bachelor.s.degrees.1,bach_deg_m_assoc=Bachelor.s.degrees.3,bach_deg_f_assoc=Bachelor.s.degrees.5) %>%
   mutate(bach_deg_tot_assoc=replace(bach_deg_tot_assoc, bach_deg_tot_assoc != "\\2\\","0")) %>%
@@ -60,10 +66,41 @@ enrollment_data <- read.csv("/Users/kenjinchang/github/projected-impact-model/pa
   mutate(bach_deg_m_assoc=replace(bach_deg_m_assoc, bach_deg_m_assoc != "\\2\\","0")) %>%
   mutate(bach_deg_m_assoc=replace(bach_deg_m_assoc, bach_deg_m_assoc == "\\2\\","1")) %>%
   mutate(bach_deg_f_assoc=replace(bach_deg_f_assoc, bach_deg_f_assoc != "\\2\\","0")) %>%
-  mutate(bach_deg_f_assoc=replace(bach_deg_f_assoc, bach_deg_f_assoc == "\\2\\","1")) 
-enrollment_data 
+  mutate(bach_deg_f_assoc=replace(bach_deg_f_assoc, bach_deg_f_assoc == "\\2\\","1")) %>%
+  mutate(assoc_deg_tot=as.double(assoc_deg_tot)) %>%
+  mutate(assoc_deg_m=as.double(assoc_deg_m)) %>%
+  mutate(assoc_deg_f=as.double(assoc_deg_f)) %>%
+  mutate(bach_deg_tot=as.double(bach_deg_tot)) %>%
+  mutate(bach_deg_tot_assoc=as.double(bach_deg_tot_assoc)) %>%
+  mutate(bach_deg_m=as.double(bach_deg_m)) %>%
+  mutate(bach_deg_m_assoc=as.double(bach_deg_m_assoc)) %>%
+  mutate(bach_deg_f=as.double(bach_deg_f)) %>%
+  mutate(bach_deg_f_assoc=as.double(bach_deg_f_assoc)) %>%
+  mutate(mast_deg_tot=as.double(mast_deg_tot)) %>%
+  mutate(mast_deg_m=as.double(mast_deg_m)) %>%
+  mutate(mast_deg_f=as.double(mast_deg_f)) %>%
+  mutate(doct_deg_tot=as.double(doct_deg_tot)) %>%
+  mutate(doct_deg_m=as.double(doct_deg_m)) %>%
+  mutate(doct_deg_f=as.double(doct_deg_f)) %>%
+  replace(is.na(.), 0) %>%
+  mutate(univ_deg_tot=bach_deg_tot+mast_deg_tot+doct_deg_tot) %>%
+  mutate(univ_deg_m=bach_deg_m+mast_deg_m+doct_deg_m) %>%
+  mutate(univ_deg_f=bach_deg_f+mast_deg_f+doct_deg_f) %>%
+  mutate(perc_bach_tot=bach_deg_tot/univ_deg_tot) %>%
+  mutate(perc_mast_tot=mast_deg_tot/univ_deg_tot) %>%
+  mutate(perc_doct_tot=doct_deg_tot/univ_deg_tot)
+enrollment_data
 ```
-  
-%>%
-  as.numeric(gsub(",","",enrollment_data$bach_deg_tot))
-  
+
+## preliminary data exploration
+
+looking at the number of people enrolled in university over time
+
+```{r}
+ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
+  geom_col() 
+```
+
+may be useful to also include variable looking at proportion of national population, to emphasize why these inerventions are partoculalry important 
+
+
