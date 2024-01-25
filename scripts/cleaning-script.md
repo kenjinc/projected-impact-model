@@ -85,6 +85,8 @@ in order, we:
 11. generated new columns calculating the proportion of university
     degrees contributed by bachelor’s, master’s, and doctoral programs
 
+12. added an identifying column (by year) for joining purposes
+
 ``` r
 enrollment_data <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/enrollment_projections.csv",skip=1)) %>%
   filter(!row_number() %in% c(2)) %>%
@@ -119,30 +121,37 @@ enrollment_data <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impac
   mutate(univ_deg_f=bach_deg_f+mast_deg_f+doct_deg_f) %>%
   mutate(perc_bach_tot=bach_deg_tot/univ_deg_tot) %>%
   mutate(perc_mast_tot=mast_deg_tot/univ_deg_tot) %>%
-  mutate(perc_doct_tot=doct_deg_tot/univ_deg_tot)
+  mutate(perc_doct_tot=doct_deg_tot/univ_deg_tot) %>%
+  separate(acad.year,"year_id",sep="-",remove=FALSE)
+```
+
+    ## Warning: Expected 1 pieces. Additional pieces discarded in 64 rows [1, 2, 3, 4,
+    ## 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].
+
+``` r
 enrollment_data
 ```
 
-    ## # A tibble: 64 × 22
-    ##    acad.year assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷ bach_…⁸
-    ##    <chr>           <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-    ##  1 1869-70             0       0       0    9371       1    7993       1    1378
-    ##  2 1879-80             0       0       0   12896       1   10411       1    2485
-    ##  3 1889-90             0       0       0   15539       1   12857       1    2682
-    ##  4 1899-1900           0       0       0   27410       1   22173       1    5237
-    ##  5 1909-10             0       0       0   37199       1   28762       1    8437
-    ##  6 1919-20             0       0       0   48622       1   31980       1   16642
-    ##  7 1929-30             0       0       0  122484       1   73615       1   48869
-    ##  8 1939-40             0       0       0  186500       1  109546       1   76954
-    ##  9 1949-50             0       0       0  432058       1  328841       1  103217
-    ## 10 1959-60             0       0       0  392440       1  254063       1  138377
-    ## # … with 54 more rows, 13 more variables: bach_deg_f_assoc <dbl>,
-    ## #   mast_deg_tot <dbl>, mast_deg_m <dbl>, mast_deg_f <dbl>, doct_deg_tot <dbl>,
-    ## #   doct_deg_m <dbl>, doct_deg_f <dbl>, univ_deg_tot <dbl>, univ_deg_m <dbl>,
-    ## #   univ_deg_f <dbl>, perc_bach_tot <dbl>, perc_mast_tot <dbl>,
-    ## #   perc_doct_tot <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
-    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc,
-    ## #   ⁶​bach_deg_m, ⁷​bach_deg_m_assoc, ⁸​bach_deg_f
+    ## # A tibble: 64 × 23
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1869-70   1869              0       0       0    9371       1    7993       1
+    ##  2 1879-80   1879              0       0       0   12896       1   10411       1
+    ##  3 1889-90   1889              0       0       0   15539       1   12857       1
+    ##  4 1899-1900 1899              0       0       0   27410       1   22173       1
+    ##  5 1909-10   1909              0       0       0   37199       1   28762       1
+    ##  6 1919-20   1919              0       0       0   48622       1   31980       1
+    ##  7 1929-30   1929              0       0       0  122484       1   73615       1
+    ##  8 1939-40   1939              0       0       0  186500       1  109546       1
+    ##  9 1949-50   1949              0       0       0  432058       1  328841       1
+    ## 10 1959-60   1959              0       0       0  392440       1  254063       1
+    ## # … with 54 more rows, 14 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>, and
+    ## #   abbreviated variable names ¹​assoc_deg_tot, ²​assoc_deg_m, ³​assoc_deg_f,
+    ## #   ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, ⁶​bach_deg_m, ⁷​bach_deg_m_assoc
 
 ## preliminary data exploration
 
@@ -155,6 +164,101 @@ ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
 
 ![](cleaning-script_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-may be useful to also include variable looking at proportion of national
-population, to emphasize why these inerventions are partoculalry
-important
+because it’s useful to see this as a function of the national
+population, we take census projections and estimates to highlighting how
+enrollment changes relative to changes in the population
+
+this helps to illustrate the role of intervening within these contexts
+and how it is expected to change over time
+
+in taking the census data, which provides projections from 2022 to 2100,
+we then take the following steps to clean the data in preparation for a
+join:
+
+1.  omit the initial few rows containing the title of table and
+    nonessential descriptive information
+
+2.  identify and select the relevant columns
+
+3.  properly align the rows so that each year corresponds to the correct
+    projection
+
+4.  multiply the projection by a factor of 1000 to align the units of
+    analysis
+
+5.  remove table footnotes
+
+6.  rename the variables so that they are consistent with our naming
+    conventions
+
+``` r
+population_projections <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_projections.csv",skip=4)) %>%
+  select(Year,Population) %>%
+  mutate_at(c("Population"),funs(lead),n=2) %>%
+  mutate(population=as.numeric(Population)*1000) %>%
+  filter(!row_number() %in% c(82,83,84,85,86,87,88,89)) %>%
+  rename(year_id=Year) %>%
+  select(!Population)
+```
+
+    ## Warning: `funs()` was deprecated in dplyr 0.8.0.
+    ## ℹ Please use a list of either functions or lambdas:
+    ## 
+    ## # Simple named list: list(mean = mean, median = median)
+    ## 
+    ## # Auto named with `tibble::lst()`: tibble::lst(mean, median)
+    ## 
+    ## # Using lambdas list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+
+``` r
+population_projections
+```
+
+    ## # A tibble: 81 × 2
+    ##    year_id population
+    ##    <chr>        <dbl>
+    ##  1 ""       333288000
+    ##  2 ""       334906000
+    ##  3 "2022"   336482000
+    ##  4 "2023"   338016000
+    ##  5 "2024"   339513000
+    ##  6 "2025"   340970000
+    ##  7 "2026"   342385000
+    ##  8 "2027"   343754000
+    ##  9 "2028"   345074000
+    ## 10 "2029"   346339000
+    ## # … with 71 more rows
+
+now, we use a `left_join` command to add all matching columns from the
+`population_projections` tibble to the `enrollment_data` tibble:
+
+``` r
+cleaned_data <- left_join(enrollment_data,population_projections)
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+cleaned_data
+```
+
+    ## # A tibble: 64 × 24
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1869-70   1869              0       0       0    9371       1    7993       1
+    ##  2 1879-80   1879              0       0       0   12896       1   10411       1
+    ##  3 1889-90   1889              0       0       0   15539       1   12857       1
+    ##  4 1899-1900 1899              0       0       0   27410       1   22173       1
+    ##  5 1909-10   1909              0       0       0   37199       1   28762       1
+    ##  6 1919-20   1919              0       0       0   48622       1   31980       1
+    ##  7 1929-30   1929              0       0       0  122484       1   73615       1
+    ##  8 1939-40   1939              0       0       0  186500       1  109546       1
+    ##  9 1949-50   1949              0       0       0  432058       1  328841       1
+    ## 10 1959-60   1959              0       0       0  392440       1  254063       1
+    ## # … with 54 more rows, 15 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
+    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …

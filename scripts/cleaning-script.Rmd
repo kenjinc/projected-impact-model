@@ -51,6 +51,7 @@ in order, we:
 
 11. generated new columns calculating the proportion of university degrees contributed by bachelor's, master's, and doctoral programs
 
+12. added an identifying column (by year) for joining purposes
 
 
 
@@ -88,7 +89,8 @@ enrollment_data <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impac
   mutate(univ_deg_f=bach_deg_f+mast_deg_f+doct_deg_f) %>%
   mutate(perc_bach_tot=bach_deg_tot/univ_deg_tot) %>%
   mutate(perc_mast_tot=mast_deg_tot/univ_deg_tot) %>%
-  mutate(perc_doct_tot=doct_deg_tot/univ_deg_tot)
+  mutate(perc_doct_tot=doct_deg_tot/univ_deg_tot) %>%
+  separate(acad.year,"year_id",sep="-",remove=FALSE)
 enrollment_data
 ```
 
@@ -101,6 +103,39 @@ ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
   geom_col() 
 ```
 
-may be useful to also include variable looking at proportion of national population, to emphasize why these inerventions are partoculalry important 
+because it's useful to see this as a function of the national population, we take census projections and estimates to highlighting how enrollment changes relative to changes in the population
 
+this helps to illustrate the role of intervening within these contexts and how it is expected to change over time
+
+in taking the census data, which provides projections from 2022 to 2100, we then take the following steps to clean the data in preparation for a join: 
+
+1. omit the initial few rows containing the title of table and nonessential descriptive information
+
+2. identify and select the relevant columns
+
+3. properly align the rows so that each year corresponds to the correct projection
+
+4. multiply the projection by a factor of 1000 to align the units of analysis
+
+5. remove table footnotes 
+
+5. rename the variables so that they are consistent with our naming conventions
+
+```{r}
+population_projections <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_projections.csv",skip=4)) %>%
+  select(Year,Population) %>%
+  mutate_at(c("Population"),funs(lead),n=2) %>%
+  mutate(population=as.numeric(Population)*1000) %>%
+  filter(!row_number() %in% c(82,83,84,85,86,87,88,89)) %>%
+  rename(year_id=Year) %>%
+  select(!Population)
+population_projections
+```
+
+now, we use a `left_join` command to add all matching columns from the `population_projections` tibble to the `enrollment_data` tibble:
+
+```{r}
+cleaned_data <- left_join(enrollment_data,population_projections)
+cleaned_data
+```
 
