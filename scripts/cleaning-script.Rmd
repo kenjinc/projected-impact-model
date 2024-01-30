@@ -139,3 +139,25 @@ cleaned_data <- left_join(enrollment_data,population_projections)
 cleaned_data
 ```
 
+as we did for the census-provided population projections, we now do the same for the census-provided population estimates. we do this in three parts because of how the national-population-estimate data is provided.
+
+```{r}
+population_estimates_20202023 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_20202023.csv",skip=3)) %>%
+  filter(row_number() %in% c(1)) %>%
+  select(X,X2020,X2021,X2022,X2023) %>%
+  rename("2020"=X2020,"2021"=X2021,"2022"=X2022,"2023"=X2023) %>%
+  pivot_longer(!X,names_to="year_id", values_to="population") %>%
+  select(!X) %>%
+  mutate(population=as.numeric(population))
+population_estimates_20202023
+```
+
+with the 2020-2023 data now in appropriate format, we can join these values to the cleaned data
+
+```{r}
+cleaned_data <- left_join(cleaned_data,population_estimates_20202023) 
+cleaned_data
+```
+
+still some issues here with the join - double-check population projections column/row alignment
+

@@ -262,3 +262,63 @@ cleaned_data
     ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
     ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
     ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
+
+as we did for the census-provided population projections, we now do the
+same for the census-provided population estimates. we do this in three
+parts because of how the national-population-estimate data is provided.
+
+``` r
+population_estimates_20202023 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_20202023.csv",skip=3)) %>%
+  filter(row_number() %in% c(1)) %>%
+  select(X,X2020,X2021,X2022,X2023) %>%
+  rename("2020"=X2020,"2021"=X2021,"2022"=X2022,"2023"=X2023) %>%
+  pivot_longer(!X,names_to="year_id", values_to="population") %>%
+  select(!X) %>%
+  mutate(population=as.numeric(population))
+population_estimates_20202023
+```
+
+    ## # A tibble: 4 × 2
+    ##   year_id population
+    ##   <chr>        <dbl>
+    ## 1 2020     331526933
+    ## 2 2021     332048977
+    ## 3 2022     333271411
+    ## 4 2023     334914895
+
+with the 2020-2023 data now in appropriate format, we can join these
+values to the cleaned data
+
+``` r
+cleaned_data <- left_join(cleaned_data,population_estimates_20202023) 
+```
+
+    ## Joining, by = c("year_id", "population")
+
+``` r
+cleaned_data
+```
+
+    ## # A tibble: 64 × 24
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1869-70   1869              0       0       0    9371       1    7993       1
+    ##  2 1879-80   1879              0       0       0   12896       1   10411       1
+    ##  3 1889-90   1889              0       0       0   15539       1   12857       1
+    ##  4 1899-1900 1899              0       0       0   27410       1   22173       1
+    ##  5 1909-10   1909              0       0       0   37199       1   28762       1
+    ##  6 1919-20   1919              0       0       0   48622       1   31980       1
+    ##  7 1929-30   1929              0       0       0  122484       1   73615       1
+    ##  8 1939-40   1939              0       0       0  186500       1  109546       1
+    ##  9 1949-50   1949              0       0       0  432058       1  328841       1
+    ## 10 1959-60   1959              0       0       0  392440       1  254063       1
+    ## # … with 54 more rows, 15 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
+    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
+
+still some issues here with the join - double-check population
+projections column/row alignment
