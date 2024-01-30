@@ -194,40 +194,29 @@ join:
 ``` r
 population_projections <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_projections.csv",skip=4)) %>%
   select(Year,Population) %>%
-  mutate_at(c("Population"),funs(lead),n=2) %>%
   mutate(population=as.numeric(Population)*1000) %>%
-  filter(!row_number() %in% c(82,83,84,85,86,87,88,89)) %>%
+  filter(!row_number() %in% c(1,2,3,3,4,82,83,84,85,86,87,88,89)) %>%
   rename(year_id=Year) %>%
   select(!Population)
-```
-
-    ## Warning: `funs()` was deprecated in dplyr 0.8.0.
-    ## ℹ Please use a list of either functions or lambdas:
-    ## 
-    ## # Simple named list: list(mean = mean, median = median)
-    ## 
-    ## # Auto named with `tibble::lst()`: tibble::lst(mean, median)
-    ## 
-    ## # Using lambdas list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
-
-``` r
 population_projections
 ```
 
-    ## # A tibble: 81 × 2
+    ## # A tibble: 77 × 2
     ##    year_id population
     ##    <chr>        <dbl>
-    ##  1 ""       333288000
-    ##  2 ""       334906000
-    ##  3 "2022"   336482000
-    ##  4 "2023"   338016000
-    ##  5 "2024"   339513000
-    ##  6 "2025"   340970000
-    ##  7 "2026"   342385000
-    ##  8 "2027"   343754000
-    ##  9 "2028"   345074000
-    ## 10 "2029"   346339000
-    ## # … with 71 more rows
+    ##  1 2024     336482000
+    ##  2 2025     338016000
+    ##  3 2026     339513000
+    ##  4 2027     340970000
+    ##  5 2028     342385000
+    ##  6 2029     343754000
+    ##  7 2030     345074000
+    ##  8 2031     346339000
+    ##  9 2032     347545000
+    ## 10 2033     348702000
+    ## # … with 67 more rows
+
+mutate_at(c(“Population”),funs(lead),n=2) %\>%
 
 now, we use a `left_join` command to add all matching columns from the
 `population_projections` tibble to the `enrollment_data` tibble:
@@ -322,3 +311,5 @@ cleaned_data
 
 still some issues here with the join - double-check population
 projections column/row alignment
+
+prioritized estimates over projections as census reccomends

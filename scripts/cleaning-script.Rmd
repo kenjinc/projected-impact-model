@@ -124,13 +124,14 @@ in taking the census data, which provides projections from 2022 to 2100, we then
 ```{r}
 population_projections <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_projections.csv",skip=4)) %>%
   select(Year,Population) %>%
-  mutate_at(c("Population"),funs(lead),n=2) %>%
   mutate(population=as.numeric(Population)*1000) %>%
-  filter(!row_number() %in% c(82,83,84,85,86,87,88,89)) %>%
+  filter(!row_number() %in% c(1,2,3,3,4,82,83,84,85,86,87,88,89)) %>%
   rename(year_id=Year) %>%
   select(!Population)
 population_projections
 ```
+  
+  mutate_at(c("Population"),funs(lead),n=2) %>%
 
 now, we use a `left_join` command to add all matching columns from the `population_projections` tibble to the `enrollment_data` tibble:
 
@@ -160,4 +161,6 @@ cleaned_data
 ```
 
 still some issues here with the join - double-check population projections column/row alignment
+
+prioritized estimates over projections as census reccomends 
 
