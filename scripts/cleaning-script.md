@@ -3,7 +3,7 @@ cleaning-script
 
 ## package loading
 
-loading in the relevant packages CRAN packages.
+loading in the relevant CRAN packages.
 
 ``` r
 library(tidyverse)
@@ -159,7 +159,8 @@ looking at the number of people enrolled in university over time
 
 ``` r
 ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
-  geom_col() 
+  geom_col(fill="#69b3a2",color="#e9ecef") + 
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
 ```
 
 ![](cleaning-script_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
@@ -222,13 +223,13 @@ now, we use a `left_join` command to add all matching columns from the
 `population_projections` tibble to the `enrollment_data` tibble:
 
 ``` r
-cleaned_data <- left_join(enrollment_data,population_projections)
+X20242031 <- left_join(enrollment_data,population_projections)
 ```
 
     ## Joining, by = "year_id"
 
 ``` r
-cleaned_data
+X20242031
 ```
 
     ## # A tibble: 64 × 24
@@ -275,17 +276,17 @@ population_estimates_20202023
     ## 3 2022     333271411
     ## 4 2023     334914895
 
-with the 2020-2023 data now in appropriate format, we can join these
-values to the cleaned data
+with the 2020-2023 data now in an appropriate format, we can join these
+values to `enrollment_data`, as we did for the population projections
 
 ``` r
-cleaned_data <- left_join(cleaned_data,population_estimates_20202023) 
+X20202023 <- left_join(enrollment_data,population_estimates_20202023) 
 ```
 
-    ## Joining, by = c("year_id", "population")
+    ## Joining, by = "year_id"
 
 ``` r
-cleaned_data
+X20202023
 ```
 
     ## # A tibble: 64 × 24
@@ -309,7 +310,363 @@ cleaned_data
     ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
     ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
 
-still some issues here with the join - double-check population
-projections column/row alignment
+``` r
+population_estimates_20102019 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_20102019.csv",skip=3)) %>%
+  filter(row_number() %in% c(1)) %>%
+  select(X,X2010,X2011,X2012,X2013,X2014,X2015,X2016,X2017,X2018,X2019) %>%
+  rename("2010"=X2010,"2011"=X2011,"2012"=X2012,"2013"=X2013,"2014"=X2014,"2015"=X2015,"2016"=X2016,"2017"=X2017,"2018"=X2018,"2019"=X2019) %>%
+  pivot_longer(!X,names_to="year_id", values_to="population") %>%
+  select(!X) %>%
+  mutate(population=as.numeric(population))
+population_estimates_20102019
+```
 
-prioritized estimates over projections as census reccomends
+    ## # A tibble: 10 × 2
+    ##    year_id population
+    ##    <chr>        <dbl>
+    ##  1 2010     309321666
+    ##  2 2011     311556874
+    ##  3 2012     313830990
+    ##  4 2013     315993715
+    ##  5 2014     318301008
+    ##  6 2015     320635163
+    ##  7 2016     322941311
+    ##  8 2017     324985539
+    ##  9 2018     326687501
+    ## 10 2019     328239523
+
+with the 2010-2019 data now in an appropriate format, we can join these
+values to `enrollment_data`, as we did for the 2020-2023 estimates
+
+``` r
+X20102019 <- left_join(enrollment_data,population_estimates_20102019) 
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+X20102019
+```
+
+    ## # A tibble: 64 × 24
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1869-70   1869              0       0       0    9371       1    7993       1
+    ##  2 1879-80   1879              0       0       0   12896       1   10411       1
+    ##  3 1889-90   1889              0       0       0   15539       1   12857       1
+    ##  4 1899-1900 1899              0       0       0   27410       1   22173       1
+    ##  5 1909-10   1909              0       0       0   37199       1   28762       1
+    ##  6 1919-20   1919              0       0       0   48622       1   31980       1
+    ##  7 1929-30   1929              0       0       0  122484       1   73615       1
+    ##  8 1939-40   1939              0       0       0  186500       1  109546       1
+    ##  9 1949-50   1949              0       0       0  432058       1  328841       1
+    ## 10 1959-60   1959              0       0       0  392440       1  254063       1
+    ## # … with 54 more rows, 15 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
+    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
+
+``` r
+population_estimates_19702009 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_19702018.csv",skip=0)) %>%
+  filter(row_number() %in% c(1)) %>%
+  select(Country.Name,X1970..YR1970.,X1971..YR1971.,X1972..YR1972.,X1973..YR1973.,X1974..YR1974.,X1975..YR1975.,X1976..YR1976.,X1977..YR1977.,X1978..YR1978.,X1979..YR1979.,X1980..YR1980.,X1981..YR1981.,X1982..YR1982.,X1983..YR1983.,X1984..YR1984.,X1985..YR1985.,X1986..YR1986.,X1987..YR1987.,X1988..YR1988.,X1989..YR1989.,X1990..YR1990.,X1991..YR1991.,X1992..YR1992.,X1993..YR1993.,X1994..YR1994.,X1995..YR1995.,X1996..YR1996.,X1997..YR1997.,X1998..YR1998.,X1999..YR1999.,X2000..YR2000.,X2001..YR2001.,X2002..YR2002.,X2003..YR2003.,X2004..YR2004.,X2005..YR2005.,X2006..YR2006.,X2007..YR2007.,X2008..YR2008.,X2009..YR2009.) %>%
+  rename("1970"=X1970..YR1970.,"1971"=X1971..YR1971.,"1972"=X1972..YR1972.,"1973"=X1973..YR1973.,"1974"=X1974..YR1974.,"1975"=X1975..YR1975.,"1976"=X1976..YR1976.,"1977"=X1977..YR1977.,"1978"=X1978..YR1978.,"1979"=X1979..YR1979.,"1980"=X1980..YR1980.,"1981"=X1981..YR1981.,"1982"=X1982..YR1982.,"1983"=X1983..YR1983.,"1984"=X1984..YR1984.,"1985"=X1985..YR1985.,"1986"=X1986..YR1986.,"1987"=X1987..YR1987.,"1988"=X1988..YR1988.,"1989"=X1989..YR1989.,"1990"=X1990..YR1990.,"1991"=X1991..YR1991.,"1992"=X1992..YR1992.,"1993"=X1993..YR1993.,"1994"=X1994..YR1994.,"1995"=X1995..YR1995.,"1996"=X1996..YR1996.,"1997"=X1997..YR1997.,"1998"=X1998..YR1998.,"1999"=X1999..YR1999.,"2000"=X2000..YR2000.,"2001"=X2001..YR2001.,"2002"=X2002..YR2002.,"2003"=X2003..YR2003.,"2004"=X2004..YR2004.,"2005"=X2005..YR2005.,"2006"=X2006..YR2006.,"2007"=X2007..YR2007.,"2008"=X2008..YR2008.,"2009"=X2009..YR2009.) %>%
+  pivot_longer(!Country.Name,names_to="year_id", values_to="population") %>%
+  select(!Country.Name) %>%
+  mutate(population=as.numeric(population))
+population_estimates_19702009
+```
+
+    ## # A tibble: 40 × 2
+    ##    year_id population
+    ##    <chr>        <dbl>
+    ##  1 1970     205052000
+    ##  2 1971     207661000
+    ##  3 1972     209896000
+    ##  4 1973     211909000
+    ##  5 1974     213854000
+    ##  6 1975     215973000
+    ##  7 1976     218035000
+    ##  8 1977     220239000
+    ##  9 1978     222585000
+    ## 10 1979     225055000
+    ## # … with 30 more rows
+
+with the 1970-2009 data now in an appropriate format, we can join these
+values to `enrollment_data`, as we did for the 2020-2023 estimates
+
+``` r
+X19702009 <- left_join(enrollment_data,population_estimates_19702009) 
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+X19702009
+```
+
+    ## # A tibble: 64 × 24
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1869-70   1869              0       0       0    9371       1    7993       1
+    ##  2 1879-80   1879              0       0       0   12896       1   10411       1
+    ##  3 1889-90   1889              0       0       0   15539       1   12857       1
+    ##  4 1899-1900 1899              0       0       0   27410       1   22173       1
+    ##  5 1909-10   1909              0       0       0   37199       1   28762       1
+    ##  6 1919-20   1919              0       0       0   48622       1   31980       1
+    ##  7 1929-30   1929              0       0       0  122484       1   73615       1
+    ##  8 1939-40   1939              0       0       0  186500       1  109546       1
+    ##  9 1949-50   1949              0       0       0  432058       1  328841       1
+    ## 10 1959-60   1959              0       0       0  392440       1  254063       1
+    ## # … with 54 more rows, 15 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
+    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
+
+at this stage, we have separately joined the `population` values from
+each of the relevant data files, and we have input the values such that
+there are no overlapping year entries, namely to prioritize inputting
+population estimates over population projections, as the census
+recommends
+
+``` r
+X19702031 <- bind_rows(population_estimates_19702009,population_estimates_20102019,population_estimates_20202023,population_projections)
+X19702031
+```
+
+    ## # A tibble: 131 × 2
+    ##    year_id population
+    ##    <chr>        <dbl>
+    ##  1 1970     205052000
+    ##  2 1971     207661000
+    ##  3 1972     209896000
+    ##  4 1973     211909000
+    ##  5 1974     213854000
+    ##  6 1975     215973000
+    ##  7 1976     218035000
+    ##  8 1977     220239000
+    ##  9 1978     222585000
+    ## 10 1979     225055000
+    ## # … with 121 more rows
+
+now, we join these values to the original `enrollment_data` and remove
+rows without population data
+
+``` r
+cleaned_data <- left_join(enrollment_data,X19702031) %>%
+    filter(!row_number() %in% c(1,2,3,4,5,6,7,8,9,10,11))
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+cleaned_data
+```
+
+    ## # A tibble: 53 × 24
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 15 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, and abbreviated variable names ¹​assoc_deg_tot,
+    ## #   ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, ⁵​bach_deg_tot_assoc, …
+
+now, we can generate a new variable calculating the share of the
+estimated (1979-20-and projected population that is estimated and
+projected to be enrolled in
+
+``` r
+cleaned_data <- cleaned_data %>% mutate(prop_pop_univ_deg_tot=univ_deg_tot/population)
+cleaned_data
+```
+
+    ## # A tibble: 53 × 25
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 16 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, and abbreviated variable
+    ## #   names ¹​assoc_deg_tot, ²​assoc_deg_m, ³​assoc_deg_f, ⁴​bach_deg_tot, …
+
+``` r
+ggplot(cleaned_data,aes(x=acad.year,y=prop_pop_univ_deg_tot)) +
+  geom_col(fill="#69b3a2",color="#e9ecef") +
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+```
+
+![](cleaning-script_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+this demonstrates how it is not just the number of university enrollees
+that are increasing but so too is the proportion of the US population
+that is enrolled in university, reinforcing why it is becoming
+increasingly important to focus efforts on intervening on dietary
+behaviors within college and university contexts
+
+that said, it is also clear from this chart that the number of
+university enrollees form a small subset of the national population. it
+could therefore be important to track, in addition to the proportion of
+the population expected to be actively enrolled in university during any
+given year, the proportion of the population that has earned a bachelor
+degree and the proportion of the university-aged population that is
+enrolled in university
+
+because the data for the latter is already included in one of the parent
+datasets, we’ll begin with this step.
+
+to do this, we’ll have to take the relevant values from
+`population_estimates_19702018`
+
+``` r
+school_aged_population_estimates_19702018 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_19702018.csv",skip=0)) %>%
+  filter(row_number() %in% c(2)) %>%
+  select(Country.Name,X1970..YR1970.,X1971..YR1971.,X1972..YR1972.,X1973..YR1973.,X1974..YR1974.,X1975..YR1975.,X1976..YR1976.,X1977..YR1977.,X1978..YR1978.,X1979..YR1979.,X1980..YR1980.,X1981..YR1981.,X1982..YR1982.,X1983..YR1983.,X1984..YR1984.,X1985..YR1985.,X1986..YR1986.,X1987..YR1987.,X1988..YR1988.,X1989..YR1989.,X1990..YR1990.,X1991..YR1991.,X1992..YR1992.,X1993..YR1993.,X1994..YR1994.,X1995..YR1995.,X1996..YR1996.,X1997..YR1997.,X1998..YR1998.,X1999..YR1999.,X2000..YR2000.,X2001..YR2001.,X2002..YR2002.,X2003..YR2003.,X2004..YR2004.,X2005..YR2005.,X2006..YR2006.,X2007..YR2007.,X2008..YR2008.,X2009..YR2009.,X2010..YR2010.,X2011..YR2011.,X2012..YR2012.,X2013..YR2013.,X2014..YR2014.,X2015..YR2015.,X2016..YR2016.,X2017..YR2017.,X2018..YR2018.) %>%
+  rename("1970"=X1970..YR1970.,"1971"=X1971..YR1971.,"1972"=X1972..YR1972.,"1973"=X1973..YR1973.,"1974"=X1974..YR1974.,"1975"=X1975..YR1975.,"1976"=X1976..YR1976.,"1977"=X1977..YR1977.,"1978"=X1978..YR1978.,"1979"=X1979..YR1979.,"1980"=X1980..YR1980.,"1981"=X1981..YR1981.,"1982"=X1982..YR1982.,"1983"=X1983..YR1983.,"1984"=X1984..YR1984.,"1985"=X1985..YR1985.,"1986"=X1986..YR1986.,"1987"=X1987..YR1987.,"1988"=X1988..YR1988.,"1989"=X1989..YR1989.,"1990"=X1990..YR1990.,"1991"=X1991..YR1991.,"1992"=X1992..YR1992.,"1993"=X1993..YR1993.,"1994"=X1994..YR1994.,"1995"=X1995..YR1995.,"1996"=X1996..YR1996.,"1997"=X1997..YR1997.,"1998"=X1998..YR1998.,"1999"=X1999..YR1999.,"2000"=X2000..YR2000.,"2001"=X2001..YR2001.,"2002"=X2002..YR2002.,"2003"=X2003..YR2003.,"2004"=X2004..YR2004.,"2005"=X2005..YR2005.,"2006"=X2006..YR2006.,"2007"=X2007..YR2007.,"2008"=X2008..YR2008.,"2009"=X2009..YR2009.,"2010"=X2010..YR2010.,"2011"=X2011..YR2011.,"2012"=X2012..YR2012.,"2013"=X2013..YR2013.,"2014"=X2014..YR2014.,"2015"=X2015..YR2015.,"2016"=X2016..YR2016.,"2017"=X2017..YR2017.,"2018"=X2018..YR2018.) %>%
+  pivot_longer(!Country.Name,names_to="year_id", values_to="univ_aged_pop") %>%
+  select(!Country.Name) %>%
+  mutate(univ_aged_pop=as.numeric(univ_aged_pop))
+school_aged_population_estimates_19702018
+```
+
+    ## # A tibble: 49 × 2
+    ##    year_id univ_aged_pop
+    ##    <chr>           <dbl>
+    ##  1 1970         17507389
+    ##  2 1971         17960339
+    ##  3 1972         18569642
+    ##  4 1973         19101629
+    ##  5 1974         19576318
+    ##  6 1975         20011045
+    ##  7 1976         20422992
+    ##  8 1977         20800278
+    ##  9 1978         21131087
+    ## 10 1979         21389316
+    ## # … with 39 more rows
+
+now, we can append this column to `cleaned_data`
+
+``` r
+cleaned_data <- left_join(cleaned_data,school_aged_population_estimates_19702018)
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+cleaned_data
+```
+
+    ## # A tibble: 53 × 26
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 17 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, univ_aged_pop <dbl>, and
+    ## #   abbreviated variable names ¹​assoc_deg_tot, ²​assoc_deg_m, ³​assoc_deg_f, …
+
+``` r
+ggplot(cleaned_data,aes(x=acad.year,y=univ_aged_pop)) +
+  geom_col(fill="#69b3a2",color="#e9ecef") +
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+```
+
+    ## Warning: Removed 13 rows containing missing values (`position_stack()`).
+
+![](cleaning-script_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+while it’s useful to see how the university-aged population has changed
+over time, it’s more valuable to visualize how the number of enrollees
+within this population has shifted between 1970 and 2018
+
+``` r
+cleaned_data <- cleaned_data %>% mutate(prop_univ_aged_pop_univ_deg_tot=univ_deg_tot/univ_aged_pop)
+cleaned_data
+```
+
+    ## # A tibble: 53 × 27
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 18 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, univ_aged_pop <dbl>,
+    ## #   prop_univ_aged_pop_univ_deg_tot <dbl>, and abbreviated variable names …
+
+``` r
+ggplot(cleaned_data,aes(x=acad.year,y=prop_univ_aged_pop_univ_deg_tot)) +
+  geom_col(fill="#69b3a2",color="#e9ecef") +
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+```
+
+    ## Warning: Removed 13 rows containing missing values (`position_stack()`).
+
+![](cleaning-script_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+in addition to showing how the proportion of enrollees within this
+segment of the population has increased with time (i.e., demonstrating
+how more individuals within this age range are enrolled in university
+than before), we also want to see how educational attainment has evolved
+with time (i.e., the proportion of the population with bachelor degrees
+or higher)
+
+because while this graph shows the amount of people enrolled in
+university within a particular age range within any given year,
+educational attainment provides a proxy for the amount of people who
+have received this type of educational experience cumulatively over
+time.
+
+for this, we will need to load in additional data
