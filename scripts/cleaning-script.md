@@ -160,7 +160,7 @@ looking at the number of people enrolled in university over time
 ``` r
 ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") + 
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
 ![](cleaning-script_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
@@ -523,7 +523,7 @@ cleaned_data
 ``` r
 ggplot(cleaned_data,aes(x=acad.year,y=prop_pop_univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
 ![](cleaning-script_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
@@ -609,7 +609,7 @@ cleaned_data
 ``` r
 ggplot(cleaned_data,aes(x=acad.year,y=univ_aged_pop)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
     ## Warning: Removed 13 rows containing missing values (`position_stack()`).
@@ -649,7 +649,7 @@ cleaned_data
 ``` r
 ggplot(cleaned_data,aes(x=acad.year,y=prop_univ_aged_pop_univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
     ## Warning: Removed 13 rows containing missing values (`position_stack()`).
@@ -663,10 +663,10 @@ than before), we also want to see how educational attainment has evolved
 with time (i.e., the proportion of the population with bachelor degrees
 or higher)
 
-because while this graph shows the amount of people enrolled in
-university within a particular age range within any given year,
-educational attainment provides a proxy for the amount of people who
-have received this type of educational experience cumulatively over
-time.
+while this graph shows the amount of people who are attending university
+in a given year, educational attainment provides a proxy for the amount
+of people who have received this type of educational experience
+cumulatively over time.
 
-for this, we will need to load in additional data
+for this, we will need to load in additional data. more specificaly, we
+will need

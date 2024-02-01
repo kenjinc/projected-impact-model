@@ -101,7 +101,7 @@ looking at the number of people enrolled in university over time
 ```{r}
 ggplot(enrollment_data,aes(x=acad.year,y=univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") + 
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
 because it's useful to see this as a function of the national population, we take census projections and estimates to highlighting how enrollment changes relative to changes in the population
@@ -221,7 +221,7 @@ cleaned_data
 ```{r}
 ggplot(cleaned_data,aes(x=acad.year,y=prop_pop_univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 this demonstrates how it is not just the number of university enrollees that are increasing but so too is the proportion of the US population that is enrolled in university, reinforcing why it is becoming increasingly important to focus efforts on intervening on dietary behaviors within college and university contexts
 
@@ -252,7 +252,7 @@ cleaned_data
 ```{r}
 ggplot(cleaned_data,aes(x=acad.year,y=univ_aged_pop)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
 while it's useful to see how the university-aged population has changed over time, it's more valuable to visualize how the number of enrollees within this population has shifted between 1970 and 2018
@@ -265,12 +265,14 @@ cleaned_data
 ```{r}
 ggplot(cleaned_data,aes(x=acad.year,y=prop_univ_aged_pop_univ_deg_tot)) +
   geom_col(fill="#69b3a2",color="#e9ecef") +
-  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"))
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
 in addition to showing how the proportion of enrollees within this segment of the population has increased with time (i.e., demonstrating how more individuals within this age range are enrolled in university than before), we also want to see how educational attainment has evolved with time (i.e., the proportion of the population with bachelor degrees or higher)
 
-because while this graph shows the amount of people enrolled in university within a particular age range within any given year, educational attainment provides a proxy for the amount of people who have received this type of educational experience cumulatively over time.
+while this graph shows the amount of people who are attending university in a given year, educational attainment provides a proxy for the amount of people who have received this type of educational experience cumulatively over time.
 
-for this, we will need to load in additional data
+for this, we will need to load in additional data. more specificaly, we will need 
+
+
 
