@@ -270,9 +270,14 @@ ggplot(cleaned_data,aes(x=acad.year,y=prop_univ_aged_pop_univ_deg_tot)) +
 
 in addition to showing how the proportion of enrollees within this segment of the population has increased with time (i.e., demonstrating how more individuals within this age range are enrolled in university than before), we also want to see how educational attainment has evolved with time (i.e., the proportion of the population with bachelor degrees or higher)
 
-while this graph shows the amount of people who are attending university in a given year, educational attainment provides a proxy for the amount of people who have received this type of educational experience cumulatively over time.
+while this graph shows the share of people who are within a particular age range who are actively attending university in a given year, educational attainment provides a proxy for the amount of people who have received this type of educational experience cumulatively over time.
 
-for this, we will need to load in additional data. more specificaly, we will need 
+for this, we will need to load in additional data. more specifically, we will need to retrieve historical time series data from the census tracking educational attainment for individuals aged 25 years and ove
+
+AND PROJICTIONS
+
+
+
 
 
 
