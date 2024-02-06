@@ -671,6 +671,121 @@ time.
 
 for this, we will need to load in additional data. more specifically, we
 will need to retrieve historical time series data from the census
-tracking educational attainment for individuals aged 25 years and ove
+tracking educational attainment for individuals (both sexes) aged 25
+years and over
 
-AND PROJICTIONS
+as we did before, we’ll first need to load this data in and get it into
+an appropriate format
+
+``` r
+attainment_estimates_19402022 <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/attainment_estimates.csv",skip=5)) %>%
+  filter(!row_number() %in% c(1)) %>%
+  filter(row_number() %in% c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,63,64,65,66,67)) %>%
+  select(X,X1.to.3.years.1,X4.years.or.more) %>%
+  rename(year_id=X,attain_onetothree=X1.to.3.years.1,attain_fourormore=X4.years.or.more) %>%
+  mutate(attain_onetothree=as.numeric(attain_onetothree*1000)) %>%
+  mutate(attain_fourormore=as.numeric(attain_fourormore*1000)) %>%
+  mutate(attainment=attain_onetothree+attain_fourormore)
+attainment_estimates_19402022
+```
+
+    ## # A tibble: 67 × 4
+    ##    year_id attain_onetothree attain_fourormore attainment
+    ##    <chr>               <dbl>             <dbl>      <dbl>
+    ##  1 2022             56659000          85217000  141876000
+    ##  2 2021             56942000          85037000  141979000
+    ##  3 2020             57552000          83701000  141253000
+    ##  4 2019             57428000          79816000  137244000
+    ##  5 2018             57810000          76924000  134734000
+    ##  6 2017             57765000          74103000  131868000
+    ##  7 2016             57660000          71900000  129560000
+    ##  8 2015             56031000          68945000  124976000
+    ##  9 2014             55709000          66879000  122588000
+    ## 10 2013             55173000          65506000  120679000
+    ## # … with 57 more rows
+
+``` r
+ggplot(attainment_estimates_19402022,aes(x=year_id,y=attainment)) +
+  geom_col(fill="#69b3a2",color="#e9ecef") +
+  theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
+```
+
+![](cleaning-script_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+this is initially useful in demonstrating how the number of people who
+have been to college have increased over time, but, as before, it does
+not account for the general increases in the total population
+
+so, for this reason, we have to take in population data for individuals
+aged 25 and over
+
+``` r
+population25plus_estimates <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/population25plus_estimates.csv",skip=0)) %>%
+  filter(row_number() %in% c(3,4,5)) %>%
+  select(Country.Name,Series,X1990..YR1990.,X1991..YR1991.,X1992..YR1992.,X1993..YR1993.,X1994..YR1994.,X1995..YR1995.,X1996..YR1996.,X1997..YR1997.,X1998..YR1998.,X1999..YR1999.,X2000..YR2000.,X2001..YR2001.,X2002..YR2002.,X2003..YR2003.,X2004..YR2004.,X2005..YR2005.,X2006..YR2006.,X2007..YR2007.,X2008..YR2008.,X2009..YR2009.,X2010..YR2010.,X2011..YR2011.,X2012..YR2012.,X2013..YR2013.,X2014..YR2014.,X2015..YR2015.) %>%
+  rename("1990"=X1990..YR1990.,"1991"=X1991..YR1991.,"1992"=X1992..YR1992.,"1993"=X1993..YR1993.,"1994"=X1994..YR1994.,"1995"=X1995..YR1995.,"1996"=X1996..YR1996.,"1997"=X1997..YR1997.,"1998"=X1998..YR1998.,"1999"=X1999..YR1999.,"2000"=X2000..YR2000.,"2001"=X2001..YR2001.,"2002"=X2002..YR2002.,"2003"=X2003..YR2003.,"2004"=X2004..YR2004.,"2005"=X2005..YR2005.,"2006"=X2006..YR2006.,"2007"=X2007..YR2007.,"2008"=X2008..YR2008.,"2009"=X2009..YR2009.,"2010"=X2010..YR2010.,"2011"=X2011..YR2011.,"2012"=X2012..YR2012.,"2013"=X2013..YR2013.,"2014"=X2014..YR2014.,"2015"=X2015..YR2015.) %>%
+  mutate("2013"=as.character("2013")) %>%
+  mutate("2014"=as.character("2014")) %>%
+  mutate("2015"=as.character("2015")) 
+populationtotal_estimates <- population25plus_estimates %>% filter(row_number() %in% c(1)) %>%
+  select(-Series) %>%
+  pivot_longer(!Country.Name,names_to="year_id", values_to="populationtotal") %>%
+  select(!Country.Name) %>%
+  mutate(populationtotal=as.numeric(populationtotal))
+population1524_estimates <- population25plus_estimates %>% filter(row_number() %in% c(2)) %>%
+  select(-Series) %>%
+  pivot_longer(!Country.Name,names_to="year_id", values_to="population1524") %>%
+  select(!Country.Name) %>%
+  mutate(population1524=as.numeric(population1524))
+population0014_estimates <- population25plus_estimates %>% filter(row_number() %in% c(2)) %>%
+  select(-Series) %>%
+  pivot_longer(!Country.Name,names_to="year_id", values_to="population0014") %>%
+  select(!Country.Name) %>%
+  mutate(population0014=as.numeric(population0014))
+population25plus_estimates <- left_join(populationtotal_estimates,population1524_estimates)
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+population25plus_estimates <- left_join(population25plus_estimates,population0014_estimates) %>%
+  mutate(population25plus=populationtotal-population1524-population0014) %>%
+  select(year_id,population25plus)
+```
+
+    ## Joining, by = "year_id"
+
+``` r
+population25plus_estimates 
+```
+
+    ## # A tibble: 26 × 2
+    ##    year_id population25plus
+    ##    <chr>              <dbl>
+    ##  1 1990           174713986
+    ##  2 1991           178794100
+    ##  3 1992           182778420
+    ##  4 1993           186366666
+    ##  5 1994           189508438
+    ##  6 1995           192365540
+    ##  7 1996           194959540
+    ##  8 1997           197477010
+    ##  9 1998           199730772
+    ## 10 1999           201809462
+    ## # … with 16 more rows
+
+now, with the population of individuals aged 25 and over between 1990
+and 2015, we can join this to the cleaned data to derive the proportion
+of individuals
+
+MAY ALSO WANT TO EXAMINE HOW COMPOSITION ETHNICALLY IS CHANGING
+
+population_estimates_19702009 \<-
+as_tibble(read.csv(“/Users/kenjinchang/github/projected-impact-model/parent-datasets/population_estimates_19702018.csv”,skip=0))
+%\>% filter(row_number() %in% c(1)) %\>%
+select(Country.Name,X1970..YR1970.,X1971..YR1971.,X1972..YR1972.,X1973..YR1973.,X1974..YR1974.,X1975..YR1975.,X1976..YR1976.,X1977..YR1977.,X1978..YR1978.,X1979..YR1979.,X1980..YR1980.,X1981..YR1981.,X1982..YR1982.,X1983..YR1983.,X1984..YR1984.,X1985..YR1985.,X1986..YR1986.,X1987..YR1987.,X1988..YR1988.,X1989..YR1989.,X1990..YR1990.,X1991..YR1991.,X1992..YR1992.,X1993..YR1993.,X1994..YR1994.,X1995..YR1995.,X1996..YR1996.,X1997..YR1997.,X1998..YR1998.,X1999..YR1999.,X2000..YR2000.,X2001..YR2001.,X2002..YR2002.,X2003..YR2003.,X2004..YR2004.,X2005..YR2005.,X2006..YR2006.,X2007..YR2007.,X2008..YR2008.,X2009..YR2009.)
+%\>%
+rename(“1970”=X1970..YR1970.,“1971”=X1971..YR1971.,“1972”=X1972..YR1972.,“1973”=X1973..YR1973.,“1974”=X1974..YR1974.,“1975”=X1975..YR1975.,“1976”=X1976..YR1976.,“1977”=X1977..YR1977.,“1978”=X1978..YR1978.,“1979”=X1979..YR1979.,“1980”=X1980..YR1980.,“1981”=X1981..YR1981.,“1982”=X1982..YR1982.,“1983”=X1983..YR1983.,“1984”=X1984..YR1984.,“1985”=X1985..YR1985.,“1986”=X1986..YR1986.,“1987”=X1987..YR1987.,“1988”=X1988..YR1988.,“1989”=X1989..YR1989.,“1990”=X1990..YR1990.,“1991”=X1991..YR1991.,“1992”=X1992..YR1992.,“1993”=X1993..YR1993.,“1994”=X1994..YR1994.,“1995”=X1995..YR1995.,“1996”=X1996..YR1996.,“1997”=X1997..YR1997.,“1998”=X1998..YR1998.,“1999”=X1999..YR1999.,“2000”=X2000..YR2000.,“2001”=X2001..YR2001.,“2002”=X2002..YR2002.,“2003”=X2003..YR2003.,“2004”=X2004..YR2004.,“2005”=X2005..YR2005.,“2006”=X2006..YR2006.,“2007”=X2007..YR2007.,“2008”=X2008..YR2008.,“2009”=X2009..YR2009.)
+%\>% pivot_longer(!Country.Name,names_to=“year_id”,
+values_to=“population”) %\>% select(!Country.Name) %\>%
+mutate(population=as.numeric(population)) population_estimates_19702009
