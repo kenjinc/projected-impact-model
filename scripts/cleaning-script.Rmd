@@ -360,7 +360,9 @@ cleaned_data %>% drop_na(prop_attainment_population25plus) %>%
 
 now that we've set up a sufficient basis looking at how college and university enrollment has and will continue to change, we need to look at both the health and sustainability implications of shifting the dietary patterns of these two populations (both the attainment and enrollment populations) 
 
-this entails, from the sustainability side, adding in the country-specific per capita estimtaes across each of the  dietary scenarios 
+this entails, from the sustainability side, adding in the country-specific per capita estimates across each of the  dietary scenarios 
+
+
 
 
 

@@ -857,5 +857,5 @@ dietary patterns of these two populations (both the attainment and
 enrollment populations)
 
 this entails, from the sustainability side, adding in the
-country-specific per capita estimtaes across each of the dietary
+country-specific per capita estimates across each of the dietary
 scenarios
