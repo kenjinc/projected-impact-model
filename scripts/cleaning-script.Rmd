@@ -349,18 +349,26 @@ cleaned_data %>% drop_na(prop_attainment_population25plus) %>%
   theme(panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
 ```
 
-```{r}
-
-```
-
-
-###MAY ALSO WANT TO EXAMINE HOW COMPOSITION ETHNICALLY IS CHANGING###
+### MAY ALSO WANT TO EXAMINE HOW COMPOSITION ETHNICALLY IS CHANGING ###
 
 ## sustainability implications
 
 now that we've set up a sufficient basis looking at how college and university enrollment has and will continue to change, we need to look at both the health and sustainability implications of shifting the dietary patterns of these two populations (both the attainment and enrollment populations) 
 
-this entails, from the sustainability side, adding in the country-specific per capita estimates across each of the  dietary scenarios 
+this entails, from the sustainability side, adding in the country-specific per capita estimates across each of the  dietary scenarios, both for 
+
+to do this, we will import CLF's country-specific dietary footprint data, as we did for the university dining impact model
+
+```{r}
+dietary_footprint_data <- as_tibble(read.csv("/Users/kenjinchang/github/projected-impact-model/parent-datasets/dietary_footprint_data.csv",skip=0)) %>%
+  filter(country=="United States of America") %>%
+  select(country,diet,attribute,centile_up,value,centile_down) %>%
+  filter(attribute=="kg_co2e_total"|attribute=="kg_co2e_excl_luc"|attribute=="l_blue_green_wf"|attribute=="l_blue_wf_total") %>%
+  filter(!diet=="baseline_adjusted"|!diet=="baseline_oecd") %>%
+  pivot_wider(names_from=c(diet,attribute),values_from=value)
+dietary_footprint_data
+```
+
 
 
 
