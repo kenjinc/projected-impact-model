@@ -869,27 +869,20 @@ dietary_footprint_data <- as_tibble(read.csv("/Users/kenjinchang/github/projecte
   select(country,diet,attribute,centile_up,value,centile_down) %>%
   filter(attribute=="kg_co2e_total"|attribute=="kg_co2e_excl_luc"|attribute=="l_blue_green_wf"|attribute=="l_blue_wf_total") %>%
   filter(!diet=="baseline_adjusted"|!diet=="baseline_oecd") %>%
-  pivot_wider(names_from=c(diet,attribute),values_from=value)
+  unite("diet_attribute",diet:attribute, remove=TRUE) %>%
+  select(diet_attribute,value) %>%
+  pivot_wider(names_from=diet_attribute,values_from=value)
 dietary_footprint_data
 ```
 
-    ## # A tibble: 31 × 51
-    ##    country       centi…¹ centi…² 2/3_v…³ 2/3_v…⁴ 2/3_v…⁵ 2/3_v…⁶ basel…⁷ basel…⁸
-    ##    <chr>           <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-    ##  1 United State…    138.    78.9    734.    741.     NA      NA      NA      NA 
-    ##  2 United State…   4784.  2363.      NA      NA  743297.     NA      NA      NA 
-    ##  3 United State…   4434.  1889.      NA      NA      NA  103696.     NA      NA 
-    ##  4 United State…    157.    98.0     NA      NA      NA      NA    2038.   2058.
-    ##  5 United State…  15913.  7859.      NA      NA      NA      NA      NA      NA 
-    ##  6 United State…  14750.  6283.      NA      NA      NA      NA      NA      NA 
-    ##  7 United State…    123.    76.9     NA      NA      NA      NA      NA      NA 
-    ##  8 United State…  14351.  7088.      NA      NA      NA      NA      NA      NA 
-    ##  9 United State…  13302.  5666.      NA      NA      NA      NA      NA      NA 
-    ## 10 United State…    181.   102.      NA      NA      NA      NA      NA      NA 
-    ## # … with 21 more rows, 42 more variables: baseline_l_blue_green_wf <dbl>,
-    ## #   baseline_l_blue_wf_total <dbl>, baseline_adjusted_kg_co2e_excl_luc <dbl>,
-    ## #   baseline_adjusted_kg_co2e_total <dbl>,
+    ## # A tibble: 1 × 48
+    ##   2/3_vegan_kg…¹ 2/3_v…² 2/3_v…³ 2/3_v…⁴ basel…⁵ basel…⁶ basel…⁷ basel…⁸ basel…⁹
+    ##            <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ## 1           734.    741. 743297. 103696.   2038.   2058.  1.24e6 144460.   1674.
+    ## # … with 39 more variables: baseline_adjusted_kg_co2e_total <dbl>,
     ## #   baseline_adjusted_l_blue_green_wf <dbl>,
     ## #   baseline_adjusted_l_blue_wf_total <dbl>,
     ## #   baseline_oecd_kg_co2e_excl_luc <dbl>, baseline_oecd_kg_co2e_total <dbl>,
-    ## #   baseline_oecd_l_blue_green_wf <dbl>, baseline_oecd_l_blue_wf_total <dbl>, …
+    ## #   baseline_oecd_l_blue_green_wf <dbl>, baseline_oecd_l_blue_wf_total <dbl>,
+    ## #   lacto_ovo_vegetarian_kg_co2e_excl_luc <dbl>,
+    ## #   lacto_ovo_vegetarian_kg_co2e_total <dbl>, …

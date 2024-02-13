@@ -365,12 +365,19 @@ dietary_footprint_data <- as_tibble(read.csv("/Users/kenjinchang/github/projecte
   select(country,diet,attribute,centile_up,value,centile_down) %>%
   filter(attribute=="kg_co2e_total"|attribute=="kg_co2e_excl_luc"|attribute=="l_blue_green_wf"|attribute=="l_blue_wf_total") %>%
   filter(!diet=="baseline_adjusted"|!diet=="baseline_oecd") %>%
-  pivot_wider(names_from=c(diet,attribute),values_from=value)
+  unite("diet_attribute",diet:attribute, remove=TRUE) %>%
+  select(!country)
 dietary_footprint_data
 ```
 
+multiply these factors by enrollment estimates and pop projections (univ_deg_tot)
+
+ %>%
+  select(diet_attribute,value) %>%
+  pivot_wider(names_from=diet_attribute,values_from=value)
 
 
-
-
+```{r}
+cleaned_data
+```
 
