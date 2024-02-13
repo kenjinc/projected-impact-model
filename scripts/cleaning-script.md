@@ -870,19 +870,56 @@ dietary_footprint_data <- as_tibble(read.csv("/Users/kenjinchang/github/projecte
   filter(attribute=="kg_co2e_total"|attribute=="kg_co2e_excl_luc"|attribute=="l_blue_green_wf"|attribute=="l_blue_wf_total") %>%
   filter(!diet=="baseline_adjusted"|!diet=="baseline_oecd") %>%
   unite("diet_attribute",diet:attribute, remove=TRUE) %>%
-  select(diet_attribute,value) %>%
-  pivot_wider(names_from=diet_attribute,values_from=value)
+  select(!country)
 dietary_footprint_data
 ```
 
-    ## # A tibble: 1 × 48
-    ##   2/3_vegan_kg…¹ 2/3_v…² 2/3_v…³ 2/3_v…⁴ basel…⁵ basel…⁶ basel…⁷ basel…⁸ basel…⁹
-    ##            <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-    ## 1           734.    741. 743297. 103696.   2038.   2058.  1.24e6 144460.   1674.
-    ## # … with 39 more variables: baseline_adjusted_kg_co2e_total <dbl>,
-    ## #   baseline_adjusted_l_blue_green_wf <dbl>,
-    ## #   baseline_adjusted_l_blue_wf_total <dbl>,
-    ## #   baseline_oecd_kg_co2e_excl_luc <dbl>, baseline_oecd_kg_co2e_total <dbl>,
-    ## #   baseline_oecd_l_blue_green_wf <dbl>, baseline_oecd_l_blue_wf_total <dbl>,
-    ## #   lacto_ovo_vegetarian_kg_co2e_excl_luc <dbl>,
-    ## #   lacto_ovo_vegetarian_kg_co2e_total <dbl>, …
+    ## # A tibble: 48 × 4
+    ##    diet_attribute                     centile_up    value centile_down
+    ##    <chr>                                   <dbl>    <dbl>        <dbl>
+    ##  1 2/3_vegan_kg_co2e_excl_luc               138.     734.         78.9
+    ##  2 2/3_vegan_kg_co2e_total                  138.     741.         78.9
+    ##  3 2/3_vegan_l_blue_green_wf               4784.  743297.       2363. 
+    ##  4 2/3_vegan_l_blue_wf_total               4434.  103696.       1889. 
+    ##  5 baseline_kg_co2e_excl_luc                157.    2038.         98.0
+    ##  6 baseline_kg_co2e_total                   157.    2058.         98.0
+    ##  7 baseline_l_blue_green_wf               15913. 1237262.       7859. 
+    ##  8 baseline_l_blue_wf_total               14750.  144460.       6283. 
+    ##  9 baseline_adjusted_kg_co2e_excl_luc       123.    1674.         76.9
+    ## 10 baseline_adjusted_kg_co2e_total          123.    1691.         76.9
+    ## # … with 38 more rows
+
+multiply these factors by enrollment estimates and pop projections
+(univ_deg_tot)
+
+%\>% select(diet_attribute,value) %\>%
+pivot_wider(names_from=diet_attribute,values_from=value)
+
+``` r
+cleaned_data <- cleaned_data %>%
+  mutate(univ_baseline_kg_co2e_total=univ_deg_tot*2058.1945 ) %>%
+  mutate(univ_baseline_kg_co2e_total_cu=univ_deg_tot*(2058.1945+156.7059)) %>%
+  mutate(univ_baseline_kg_co2e_total_cd=univ_deg_tot*(2058.1945-98.00016)) 
+cleaned_data
+```
+
+    ## # A tibble: 53 × 36
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 27 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, univ_aged_pop <dbl>,
+    ## #   prop_univ_aged_pop_univ_deg_tot <dbl>, attain_onetothree <dbl>, …

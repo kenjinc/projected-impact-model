@@ -378,6 +378,10 @@ multiply these factors by enrollment estimates and pop projections (univ_deg_tot
 
 
 ```{r}
+cleaned_data <- cleaned_data %>%
+  mutate(univ_baseline_kg_co2e_total=univ_deg_tot*2058.1945	) %>%
+  mutate(univ_baseline_kg_co2e_total_cu=univ_deg_tot*(2058.1945+156.7059)) %>%
+  mutate(univ_baseline_kg_co2e_total_cd=univ_deg_tot*(2058.1945-98.00016)) 
 cleaned_data
 ```
 
