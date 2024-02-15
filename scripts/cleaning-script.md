@@ -897,13 +897,118 @@ pivot_wider(names_from=diet_attribute,values_from=value)
 
 ``` r
 cleaned_data <- cleaned_data %>%
-  mutate(univ_baseline_kg_co2e_total=univ_deg_tot*2058.1945 ) %>%
+  mutate(univ_baseline_kg_co2e_total=univ_deg_tot*2058.1945) %>%
   mutate(univ_baseline_kg_co2e_total_cu=univ_deg_tot*(2058.1945+156.7059)) %>%
-  mutate(univ_baseline_kg_co2e_total_cd=univ_deg_tot*(2058.1945-98.00016)) 
+  mutate(univ_baseline_kg_co2e_total_cd=univ_deg_tot*(2058.1945-98.00016)) %>%
+  mutate(univ_baseline_kg_co2e_excl_luc=univ_deg_tot*2037.7487) %>%
+  mutate(univ_baseline_kg_co2e_excl_luc_cu=univ_deg_tot*(2037.7487+156.7059)) %>%
+  mutate(univ_baseline_kg_co2e_excl_luc_cd=univ_deg_tot*(2037.7487-98.00016)) %>%
+  mutate(univ_baseline_l_blue_green_wf=univ_deg_tot*1237262.3770) %>%
+  mutate(univ_baseline_l_blue_green_wf_cu=univ_deg_tot*(1237262.3770+15912.7882)) %>%
+  mutate(univ_baseline_l_blue_green_wf_cd=univ_deg_tot*(1237262.3770-7859.23827)) %>%
+  mutate(univ_baseline_l_blue_wf_total=univ_deg_tot*144460.4314) %>%
+  mutate(univ_baseline_l_blue_wf_total_cu=univ_deg_tot*(144460.4314+14749.9045)) %>%
+  mutate(univ_baseline_l_blue_wf_total_cd=univ_deg_tot*(144460.4314-6282.85071)) %>% 
+  mutate(univ_meatless_day_kg_co2e_total=univ_deg_tot*1619.7904) %>%
+  mutate(univ_meatless_day_kg_co2e_total_cu=univ_deg_tot*(1619.7904+121.6201)) %>%
+  mutate(univ_meatless_day_kg_co2e_total_cd=univ_deg_tot*(1619.7904-74.67129)) %>%
+  mutate(univ_meatless_day_kg_co2e_excl_luc=univ_deg_tot*1605.2594) %>%
+  mutate(univ_meatless_day_kg_co2e_excl_luc_cu=univ_deg_tot*(1605.2594+121.6201)) %>%
+  mutate(univ_meatless_day_kg_co2e_excl_luc_cd=univ_deg_tot*(1605.2594-74.67129)) %>%
+  mutate(univ_meatless_day_l_blue_green_wf=univ_deg_tot*957985.9418) %>%
+  mutate(univ_meatless_day_l_blue_green_wf_cu=univ_deg_tot*(957985.9418+12300.9881)) %>%
+  mutate(univ_meatless_day_l_blue_green_wf_cd=univ_deg_tot*(957985.9418-6075.39014)) %>%
+  mutate(univ_meatless_day_l_blue_wf_total=univ_deg_tot*112868.4321) %>%
+  mutate(univ_meatless_day_l_blue_wf_total_cu=univ_deg_tot*(112868.4321+11402.0496)) %>%
+  mutate(univ_meatless_day_l_blue_wf_total_cd=univ_deg_tot*(112868.4321-4856.80265)) %>%
+  mutate(univ_low_red_meat_kg_co2e_total=univ_deg_tot*1457.3872) %>%
+  mutate(univ_low_red_meat_kg_co2e_total_cu=univ_deg_tot*(1457.3872+127.4111)) %>%
+  mutate(univ_low_red_meat_kg_co2e_total_cd=univ_deg_tot*(1457.3872-70.66082)) %>%
+  mutate(univ_low_red_meat_kg_co2e_excl_luc=univ_deg_tot*1443.7257) %>%
+  mutate(univ_low_red_meat_kg_co2e_excl_luc_cu=univ_deg_tot*(1443.7257+127.4111)) %>%
+  mutate(univ_low_red_meat_kg_co2e_excl_luc_cd=univ_deg_tot*(1443.7257-70.66082)) %>%
+  mutate(univ_low_red_meat_l_blue_green_wf=univ_deg_tot*1005111.5717) %>%
+  mutate(univ_low_red_meat_l_blue_green_wf_cu=univ_deg_tot*(1005111.5717+12556.9708)) %>%
+  mutate(univ_low_red_meat_l_blue_green_wf_cd=univ_deg_tot*(1005111.5717-6201.81859)) %>%
+  mutate(univ_low_red_meat_l_blue_wf_total=univ_deg_tot*117935.0037) %>%
+  mutate(univ_low_red_meat_l_blue_wf_total_cu=univ_deg_tot*(117935.0037+11639.3255)) %>%
+  mutate(univ_low_red_meat_l_blue_wf_total_cd=univ_deg_tot*(117935.0037-4957.87238)) %>%
+  mutate(univ_no_dairy_kg_co2e_total=univ_deg_tot*1300.5424) %>%
+  mutate(univ_no_dairy_kg_co2e_total_cu=univ_deg_tot*(1300.5424+140.3943)) %>%
+  mutate(univ_no_dairy_kg_co2e_total_cd=univ_deg_tot*(1300.5424-78.14317)) %>%
+  mutate(univ_no_dairy_kg_co2e_excl_luc=univ_deg_tot*1285.1943) %>%
+  mutate(univ_no_dairy_kg_co2e_excl_luc_cu=univ_deg_tot*(1443.7257+140.3943)) %>%
+  mutate(univ_no_dairy_kg_co2e_excl_luc_cd=univ_deg_tot*(1443.7257-78.14317)) %>%
+  mutate(univ_no_dairy_l_blue_green_wf=univ_deg_tot*986698.7721) %>%
+  mutate(univ_no_dairy_l_blue_green_wf_cu=univ_deg_tot*(986698.7721+14953.5181)) %>%
+  mutate(univ_no_dairy_l_blue_green_wf_cd=univ_deg_tot*(986698.7721-7385.46003)) %>%
+  mutate(univ_no_dairy_l_blue_wf_total=univ_deg_tot*124942.7917) %>%
+  mutate(univ_no_dairy_l_blue_wf_total_cu=univ_deg_tot*(124942.7917+13860.7365)) %>%
+  mutate(univ_no_dairy_l_blue_wf_total_cd=univ_deg_tot*(124942.7917-5904.10180)) %>%
+  mutate(univ_no_red_meat_kg_co2e_total=univ_deg_tot*857.9898) %>%
+  mutate(univ_no_red_meat_kg_co2e_total_cu=univ_deg_tot*(857.9898+131.7100)) %>%
+  mutate(univ_no_red_meat_kg_co2e_total_cd=univ_deg_tot*(857.9898-73.16635)) %>%
+  mutate(univ_no_red_meat_kg_co2e_excl_luc=univ_deg_tot*855.4446) %>%
+  mutate(univ_no_red_meat_kg_co2e_excl_luc_cu=univ_deg_tot*(855.4446+131.7100)) %>%
+  mutate(univ_no_red_meat_kg_co2e_excl_luc_cd=univ_deg_tot*(855.4446-73.16635)) %>%
+  mutate(univ_no_red_meat_l_blue_green_wf=univ_deg_tot*757963.0300) %>%
+  mutate(univ_no_red_meat_l_blue_green_wf_cu=univ_deg_tot*(757963.0300+15397.1066)) %>%
+  mutate(univ_no_red_meat_l_blue_green_wf_cd=univ_deg_tot*(757963.0300-7604.54596)) %>%
+  mutate(univ_no_red_meat_l_blue_wf_total=univ_deg_tot*109780.3801) %>%
+  mutate(univ_no_red_meat_l_blue_wf_total_cu=univ_deg_tot*(109780.3801+14271.9082)) %>%
+  mutate(univ_no_red_meat_l_blue_wf_total_cd=univ_deg_tot*(109780.3801-6079.24399)) %>%
+  mutate(univ_pescatarian_kg_co2e_total=univ_deg_tot*876.6985) %>%
+  mutate(univ_pescatarian_kg_co2e_total_cu=univ_deg_tot*(876.6985+191.1300)) %>%
+  mutate(univ_pescatarian_kg_co2e_total_cd=univ_deg_tot*(876.6985-105.80171)) %>%
+  mutate(univ_pescatarian_kg_co2e_excl_luc=univ_deg_tot*874.8201) %>%
+  mutate(univ_pescatarian_kg_co2e_excl_luc_cu=univ_deg_tot*(874.8201+191.1300)) %>%
+  mutate(univ_pescatarian_kg_co2e_excl_luc_cd=univ_deg_tot*(874.8201-105.80171)) %>%
+  mutate(univ_pescatarian_l_blue_green_wf=univ_deg_tot*755752.5469) %>%
+  mutate(univ_pescatarian_l_blue_green_wf_cu=univ_deg_tot*(755752.5469+51785.3751)) %>%
+  mutate(univ_pescatarian_l_blue_green_wf_cd=univ_deg_tot*(755752.5469-25576.51091)) %>%
+  mutate(univ_pescatarian_l_blue_wf_total=univ_deg_tot*154470.6091) %>%
+  mutate(univ_pescatarian_l_blue_wf_total_cu=univ_deg_tot*(154470.6091+48000.9743)) %>%
+  mutate(univ_pescatarian_l_blue_wf_total_cd=univ_deg_tot*(154470.6091-20446.43439)) %>%
+  mutate(univ_vegetarian_kg_co2e_total=univ_deg_tot*1193.9316) %>%
+  mutate(univ_vegetarian_kg_co2e_total_cu=univ_deg_tot*(1193.9316+114.4507)) %>%
+  mutate(univ_vegetarian_kg_co2e_total_cd=univ_deg_tot*(1193.9316-61.44851)) %>%
+  mutate(univ_vegetarian_kg_co2e_excl_luc=univ_deg_tot*1190.4554) %>%
+  mutate(univ_vegetarian_kg_co2e_excl_luc_cu=univ_deg_tot*(1190.4554+114.4507)) %>%
+  mutate(univ_vegetarian_kg_co2e_excl_luc_cd=univ_deg_tot*(1190.4554-61.44851)) %>%
+  mutate(univ_vegetarian_l_blue_green_wf=univ_deg_tot*759347.4136) %>% 
+  mutate(univ_vegetarian_l_blue_green_wf_cu=univ_deg_tot*(759347.4136+0.0000)) %>%
+  mutate(univ_vegetarian_l_blue_green_wf_cd=univ_deg_tot*(759347.4136-0.0000)) %>%
+  mutate(univ_vegetarian_l_blue_wf_total=univ_deg_tot*90961.9731) %>%
+  mutate(univ_vegetarian_l_blue_wf_total_cu=univ_deg_tot*(90961.9731+0.0000)) %>%
+  mutate(univ_vegetarian_l_blue_wf_total_cd=univ_deg_tot*(90961.9731-0.0000)) %>%
+  mutate(univ_23vegan_kg_co2e_total=univ_deg_tot*740.5162) %>%
+  mutate(univ_23vegan_kg_co2e_total_cu=univ_deg_tot*(740.5162+138.4838)) %>%
+  mutate(univ_23vegan_kg_co2e_total_cd=univ_deg_tot*(740.5162-78.89973)) %>%
+  mutate(univ_23vegankg_co2e_excl_luc=univ_deg_tot*734.1675) %>%
+  mutate(univ_23vegan_kg_co2e_excl_luc_cu=univ_deg_tot*(734.1675+138.4838)) %>%
+  mutate(univ_23vegan_kg_co2e_excl_luc_cd=univ_deg_tot*(734.1675-78.89973)) %>%
+  mutate(univ_23vegan_l_blue_green_wf=univ_deg_tot*743296.7674) %>% 
+  mutate(univ_23vegan_l_blue_green_wf_cu=univ_deg_tot*(743296.7674+4783.7176)) %>%
+  mutate(univ_23vegan_l_blue_green_wf_cd=univ_deg_tot*(743296.7674-2362.65172)) %>%
+  mutate(univ_23vegan_l_blue_wf_total=univ_deg_tot*103695.9055) %>%
+  mutate(univ_23vegan_l_blue_wf_total_cu=univ_deg_tot*(103695.9055+4434.1304)) %>%
+  mutate(univ_23vegan_l_blue_wf_total_cd=univ_deg_tot*(103695.9055-1888.75659   )) %>%
+  mutate(univ_vegan_kg_co2e_total=univ_deg_tot*265.3908) %>%
+  mutate(univ_vegan_kg_co2e_total_cu=univ_deg_tot*(265.3908+146.3228)) %>%
+  mutate(univ_vegan_kg_co2e_total_cd=univ_deg_tot*(265.3908-79.91791)) %>%
+  mutate(univ_vegan_kg_co2e_excl_luc=univ_deg_tot*264.0546) %>%
+  mutate(univ_vegan_kg_co2e_excl_luc_cu=univ_deg_tot*(264.0546+146.3228)) %>%
+  mutate(univ_vegan_kg_co2e_excl_luc_cd=univ_deg_tot*(264.0546-79.91791)) %>%
+  mutate(univ_vegan_l_blue_green_wf=univ_deg_tot*619398.9695) %>% 
+  mutate(univ_vegan_l_blue_green_wf_cu=univ_deg_tot*(619398.9695+0.0000)) %>%
+  mutate(univ_vegan_l_blue_green_wf_cd=univ_deg_tot*(619398.9695-0.0000)) %>%
+  mutate(univ_vegan_l_blue_wf_total=univ_deg_tot*97284.1040) %>%
+  mutate(univ_vegan_l_blue_wf_total_cu=univ_deg_tot*(97284.1040+0.0000)) %>%
+  mutate(univ_vegan_l_blue_wf_total_cd=univ_deg_tot*(97284.1040-0.0000  )) 
 cleaned_data
 ```
 
-    ## # A tibble: 53 × 36
+    ## # A tibble: 53 × 141
     ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
     ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
     ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
@@ -916,7 +1021,7 @@ cleaned_data
     ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
     ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
     ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
-    ## # … with 43 more rows, 27 more variables: bach_deg_f <dbl>,
+    ## # … with 43 more rows, 132 more variables: bach_deg_f <dbl>,
     ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
     ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
     ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
