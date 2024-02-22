@@ -486,7 +486,37 @@ cleaned_data <- cleaned_data %>%
   mutate(univ_vegan_l_blue_green_wf_cd=univ_deg_tot*(619398.9695-0.0000)) %>%
   mutate(univ_vegan_l_blue_wf_total=univ_deg_tot*97284.1040) %>%
   mutate(univ_vegan_l_blue_wf_total_cu=univ_deg_tot*(97284.1040+0.0000)) %>%
-  mutate(univ_vegan_l_blue_wf_total_cd=univ_deg_tot*(97284.1040-0.0000	)) 
+  mutate(univ_vegan_l_blue_wf_total_cd=univ_deg_tot*(97284.1040-0.0000)) %>%
+  mutate(univ_baseline_kg_co2e_luc=univ_baseline_kg_co2e_total-univ_baseline_kg_co2e_excl_luc) %>%
+  mutate(univ_meatless_day_kg_co2e_luc=univ_meatless_day_kg_co2e_total-univ_meatless_day_kg_co2e_excl_luc) %>%
+  mutate(univ_low_red_meat_kg_co2e_luc=univ_low_red_meat_kg_co2e_total-univ_low_red_meat_kg_co2e_excl_luc) %>%
+  mutate(univ_no_dairy_kg_co2e_luc=univ_no_dairy_kg_co2e_total-univ_no_dairy_kg_co2e_excl_luc) %>%
+  mutate(univ_no_red_meat_kg_co2e_luc=univ_no_red_meat_kg_co2e_total-univ_no_red_meat_kg_co2e_excl_luc) %>%
+  mutate(univ_pescatarian_kg_co2e_luc=univ_pescatarian_kg_co2e_total-univ_pescatarian_kg_co2e_excl_luc) %>%
+  mutate(univ_vegetarian_kg_co2e_luc=univ_vegetarian_kg_co2e_total-univ_vegetarian_kg_co2e_excl_luc) %>%
+  mutate(univ_23vegan_kg_co2e_luc=univ_23vegan_kg_co2e_total-univ_23vegankg_co2e_excl_luc) %>%
+  mutate(univ_vegan_kg_co2e_luc=univ_vegan_kg_co2e_total-univ_vegan_kg_co2e_excl_luc) 
 cleaned_data
 ```
 
+mutated to find luc-attributable dietary emissions / need to introduce similar functions isolating green water footprints 
+
+mutate to calculate reductions in favor of scenario-specific totals
+
+```{r}
+cleaned_data %>%
+  select(year_id,univ_baseline_kg_co2e_luc,univ_baseline_kg_co2e_excl_luc,univ_meatless_day_kg_co2e_luc,univ_meatless_day_kg_co2e_excl_luc,univ_low_red_meat_kg_co2e_luc,univ_low_red_meat_kg_co2e_excl_luc,univ_no_dairy_kg_co2e_luc,univ_no_dairy_kg_co2e_excl_luc,univ_no_red_meat_kg_co2e_luc,univ_no_red_meat_kg_co2e_excl_luc,univ_pescatarian_kg_co2e_luc,univ_pescatarian_kg_co2e_excl_luc,univ_vegetarian_kg_co2e_luc,univ_vegetarian_kg_co2e_excl_luc,univ_23vegan_kg_co2e_luc,univ_23vegankg_co2e_excl_luc,univ_vegan_kg_co2e_luc,univ_vegan_kg_co2e_excl_luc) %>%
+  pivot_longer(!year_id,names_to="indicator",values_to="value") %>%
+  ggplot(aes(x=year_id,y=value,fill=indicator)) +
+  geom_col(position="stack") + 
+  scale_fill_viridis_d() + 
+  theme(legend.position="none",panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
+```
+ facet_wrap(~indicator)
+ 
+```{r}
+cleaned_data %>%
+  mutate(univ_meatless_day_kg_co2e_total_red_from_baseline=univ_meatless_day_kg_co2e_total-univ_baseline_kg_co2e_total)
+```
+ 
+reduction AND percent reduction

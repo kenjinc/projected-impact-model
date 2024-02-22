@@ -1004,11 +1004,20 @@ cleaned_data <- cleaned_data %>%
   mutate(univ_vegan_l_blue_green_wf_cd=univ_deg_tot*(619398.9695-0.0000)) %>%
   mutate(univ_vegan_l_blue_wf_total=univ_deg_tot*97284.1040) %>%
   mutate(univ_vegan_l_blue_wf_total_cu=univ_deg_tot*(97284.1040+0.0000)) %>%
-  mutate(univ_vegan_l_blue_wf_total_cd=univ_deg_tot*(97284.1040-0.0000  )) 
+  mutate(univ_vegan_l_blue_wf_total_cd=univ_deg_tot*(97284.1040-0.0000)) %>%
+  mutate(univ_baseline_kg_co2e_luc=univ_baseline_kg_co2e_total-univ_baseline_kg_co2e_excl_luc) %>%
+  mutate(univ_meatless_day_kg_co2e_luc=univ_meatless_day_kg_co2e_total-univ_meatless_day_kg_co2e_excl_luc) %>%
+  mutate(univ_low_red_meat_kg_co2e_luc=univ_low_red_meat_kg_co2e_total-univ_low_red_meat_kg_co2e_excl_luc) %>%
+  mutate(univ_no_dairy_kg_co2e_luc=univ_no_dairy_kg_co2e_total-univ_no_dairy_kg_co2e_excl_luc) %>%
+  mutate(univ_no_red_meat_kg_co2e_luc=univ_no_red_meat_kg_co2e_total-univ_no_red_meat_kg_co2e_excl_luc) %>%
+  mutate(univ_pescatarian_kg_co2e_luc=univ_pescatarian_kg_co2e_total-univ_pescatarian_kg_co2e_excl_luc) %>%
+  mutate(univ_vegetarian_kg_co2e_luc=univ_vegetarian_kg_co2e_total-univ_vegetarian_kg_co2e_excl_luc) %>%
+  mutate(univ_23vegan_kg_co2e_luc=univ_23vegan_kg_co2e_total-univ_23vegankg_co2e_excl_luc) %>%
+  mutate(univ_vegan_kg_co2e_luc=univ_vegan_kg_co2e_total-univ_vegan_kg_co2e_excl_luc) 
 cleaned_data
 ```
 
-    ## # A tibble: 53 × 141
+    ## # A tibble: 53 × 150
     ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
     ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
     ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
@@ -1021,10 +1030,56 @@ cleaned_data
     ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
     ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
     ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
-    ## # … with 43 more rows, 132 more variables: bach_deg_f <dbl>,
+    ## # … with 43 more rows, 141 more variables: bach_deg_f <dbl>,
     ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
     ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
     ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
     ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
     ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, univ_aged_pop <dbl>,
     ## #   prop_univ_aged_pop_univ_deg_tot <dbl>, attain_onetothree <dbl>, …
+
+mutated to find luc-attributable dietary emissions / need to introduce
+similar functions isolating green water footprints
+
+mutate to calculate reductions in favor of scenario-specific totals
+
+``` r
+cleaned_data %>%
+  select(year_id,univ_baseline_kg_co2e_luc,univ_baseline_kg_co2e_excl_luc,univ_meatless_day_kg_co2e_luc,univ_meatless_day_kg_co2e_excl_luc,univ_low_red_meat_kg_co2e_luc,univ_low_red_meat_kg_co2e_excl_luc,univ_no_dairy_kg_co2e_luc,univ_no_dairy_kg_co2e_excl_luc,univ_no_red_meat_kg_co2e_luc,univ_no_red_meat_kg_co2e_excl_luc,univ_pescatarian_kg_co2e_luc,univ_pescatarian_kg_co2e_excl_luc,univ_vegetarian_kg_co2e_luc,univ_vegetarian_kg_co2e_excl_luc,univ_23vegan_kg_co2e_luc,univ_23vegankg_co2e_excl_luc,univ_vegan_kg_co2e_luc,univ_vegan_kg_co2e_excl_luc) %>%
+  pivot_longer(!year_id,names_to="indicator",values_to="value") %>%
+  ggplot(aes(x=year_id,y=value,fill=indicator)) +
+  geom_col(position="stack") + 
+  scale_fill_viridis_d() + 
+  theme(legend.position="none",panel.grid.minor=element_blank(),panel.border=element_rect(color="black",fill="transparent"),panel.background=element_rect(fill="transparent"),axis.text.x=element_text(angle=90,vjust=0,hjust=0))
+```
+
+![](cleaning-script_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+facet_wrap(~indicator)
+
+``` r
+cleaned_data %>%
+  mutate(univ_meatless_day_kg_co2e_total_red_from_baseline=univ_meatless_day_kg_co2e_total-univ_baseline_kg_co2e_total)
+```
+
+    ## # A tibble: 53 × 151
+    ##    acad.year year_id assoc_deg…¹ assoc…² assoc…³ bach_…⁴ bach_…⁵ bach_…⁶ bach_…⁷
+    ##    <chr>     <chr>         <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 1979-80   1979         400910  183737  217173  929417       0  473611       0
+    ##  2 1980-81   1980         416377  188638  227739  935140       0  469883       0
+    ##  3 1981-82   1981         434526  196944  237582  952998       0  473364       0
+    ##  4 1982-83   1982         449620  203991  245629  969510       0  479140       0
+    ##  5 1983-84   1983         452240  202704  249536  974309       0  482319       0
+    ##  6 1984-85   1984         454712  202932  251780  979477       0  482528       0
+    ##  7 1985-86   1985         446047  196166  249881  987823       0  485923       0
+    ##  8 1986-87   1986         436304  190839  245465  991264       0  480782       0
+    ##  9 1987-88   1987         435085  190047  245038  994829       0  477203       0
+    ## 10 1988-89   1988         436764  186316  250448 1018755       0  483346       0
+    ## # … with 43 more rows, 142 more variables: bach_deg_f <dbl>,
+    ## #   bach_deg_f_assoc <dbl>, mast_deg_tot <dbl>, mast_deg_m <dbl>,
+    ## #   mast_deg_f <dbl>, doct_deg_tot <dbl>, doct_deg_m <dbl>, doct_deg_f <dbl>,
+    ## #   univ_deg_tot <dbl>, univ_deg_m <dbl>, univ_deg_f <dbl>,
+    ## #   perc_bach_tot <dbl>, perc_mast_tot <dbl>, perc_doct_tot <dbl>,
+    ## #   population <dbl>, prop_pop_univ_deg_tot <dbl>, univ_aged_pop <dbl>,
+    ## #   prop_univ_aged_pop_univ_deg_tot <dbl>, attain_onetothree <dbl>, …
+
+reduction AND percent reduction
